@@ -1,2 +1,30 @@
-# producthub
-AI-powered product feedback management tool
+# Focus Tomato
+
+一个轻量的番茄倒计时网页工具。第一版使用原生 HTML、CSS 和 JavaScript，方便学习网页最基础的结构、样式与交互。
+
+## 第一版功能
+
+- 25 分钟专注、5 分钟休息与 15 分钟小憩
+- 开始、暂停和重置
+- 页面标题同步显示剩余时间
+- 专注完成后自动进入休息
+- 休息完成后自动回到专注
+- 本机保存今日完成轮次
+- 结束提示音
+
+## 本地运行
+
+在项目目录执行：
+
+```bash
+python3 -m http.server 8000
+```
+
+然后在浏览器访问 <http://localhost:8000>。
+
+## 项目文件
+
+- `index.html`：页面结构
+- `styles.css`：页面样式
+- `app.js`：倒计时和交互逻辑
+- `PRD.md`：第一版产品需求文档
