@@ -151,7 +151,8 @@ body.break-mode .progress-value {
 }
 
 .primary-button,
-.secondary-button {
+.secondary-button,
+.alarm-button {
   min-height: 48px;
   border-radius: 14px;
   padding: 0 22px;
@@ -160,7 +161,8 @@ body.break-mode .progress-value {
 }
 
 .primary-button:hover,
-.secondary-button:hover {
+.secondary-button:hover,
+.alarm-button:hover {
   transform: translateY(-1px);
 }
 
@@ -182,6 +184,27 @@ body.break-mode .primary-button {
   border: 1px solid var(--line);
   color: var(--ink);
   background: white;
+}
+
+.alarm-button {
+  min-width: 180px;
+  border: 0;
+  color: white;
+  background: #b63b31;
+  box-shadow: 0 10px 26px rgba(182, 59, 49, 0.3);
+  font-weight: 800;
+  animation: alarm-pulse 1.2s ease-in-out infinite;
+}
+
+.alarm-button[hidden] {
+  display: none;
+}
+
+@keyframes alarm-pulse {
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 12px 30px rgba(182, 59, 49, 0.42);
+  }
 }
 
 .hint {
@@ -250,7 +273,8 @@ footer {
   }
 
   .primary-button,
-  .secondary-button {
+  .secondary-button,
+  .alarm-button {
     padding: 0 17px;
   }
 }
@@ -261,5 +285,9 @@ footer {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+
+  .alarm-button {
+    animation: none;
   }
 }
