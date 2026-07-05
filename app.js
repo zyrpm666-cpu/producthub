@@ -31,6 +31,7 @@ const roundsElement = document.querySelector("#rounds");
 const dotsElement = document.querySelector("#tomato-dots");
 const toggleButton = document.querySelector("#toggle-button");
 const resetButton = document.querySelector("#reset-button");
+const stopAlarmButton = document.querySelector("#stop-alarm-button");
 const modeButtons = document.querySelectorAll(".mode-button");
 const progressCircle = document.querySelector(".progress-value");
 
@@ -40,6 +41,11 @@ let isRunning = false;
 let intervalId = null;
 let targetTime = null;
 let rounds = loadTodayRounds();
+let audioContext = null;
+let alarmIntervalId = null;
+let activeAlarmSources = [];
+let isAlarming = false;
+let alarmMessage = "";
 
 progressCircle.style.strokeDasharray = String(CIRCUMFERENCE);
 
@@ -86,14 +92,29 @@ function render() {
   timeElement.textContent = formattedTime;
   roundsElement.textContent = String(rounds);
   progressCircle.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - progress));
-  document.title = isRunning ? `${formattedTime} · Focus Tomato` : "Focus Tomato";
+  document.title = isAlarming
+    ? "⏰ 时间到 · Focus Tomato"
+    : isRunning
+      ? `${formattedTime} · Focus Tomato`
+      : "Focus Tomato";
   document.body.classList.toggle("break-mode", mode !== "focus");
 
   modeButtons.forEach((button) => {
     const isActive = button.dataset.mode === mode;
     button.classList.toggle("active", isActive);
     button.setAttribute("aria-pressed", String(isActive));
+    button.disabled = isAlarming;
   });
+
+  toggleButton.hidden = isAlarming;
+  resetButton.hidden = isAlarming;
+  stopAlarmButton.hidden = !isAlarming;
+
+  if (isAlarming) {
+    statusElement.textContent = alarmMessage;
+    renderDots();
+    return;
+  }
 
   if (isRunning) {
     toggleButton.textContent = "暂停";
@@ -117,42 +138,98 @@ function stopTimer() {
   targetTime = null;
 }
 
-function playChime() {
+function ensureAudioContext() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
+  if (!AudioContext) return null;
 
-  const context = new AudioContext();
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
+  if (!audioContext || audioContext.state === "closed") {
+    audioContext = new AudioContext();
+  }
 
-  oscillator.frequency.setValueAtTime(660, context.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(880, context.currentTime + 0.35);
-  gain.gain.setValueAtTime(0.0001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.7);
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
 
-  oscillator.connect(gain);
-  gain.connect(context.destination);
-  oscillator.start();
-  oscillator.stop(context.currentTime + 0.72);
-  oscillator.addEventListener("ended", () => context.close());
+  return audioContext;
+}
+
+function playAlarmMelody() {
+  const context = ensureAudioContext();
+  if (!context) return;
+
+  const notes = [523.25, 659.25, 783.99, 659.25];
+  const melodyStart = context.currentTime + 0.02;
+
+  notes.forEach((frequency, index) => {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const noteStart = melodyStart + index * 0.32;
+    const noteEnd = noteStart + 0.72;
+
+    oscillator.type = index % 2 === 0 ? "sine" : "triangle";
+    oscillator.frequency.setValueAtTime(frequency, noteStart);
+    gain.gain.setValueAtTime(0.0001, noteStart);
+    gain.gain.exponentialRampToValueAtTime(0.16, noteStart + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, noteEnd);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(noteStart);
+    oscillator.stop(noteEnd);
+    activeAlarmSources.push(oscillator);
+    oscillator.addEventListener("ended", () => {
+      activeAlarmSources = activeAlarmSources.filter((source) => source !== oscillator);
+    });
+  });
+}
+
+function startAlarm(message) {
+  if (isAlarming) return;
+  isAlarming = true;
+  alarmMessage = `${message} 点击“停止响铃”后铃声才会停止。`;
+  playAlarmMelody();
+  alarmIntervalId = window.setInterval(playAlarmMelody, 2500);
+  render();
+}
+
+function stopAlarm() {
+  if (alarmIntervalId !== null) {
+    window.clearInterval(alarmIntervalId);
+    alarmIntervalId = null;
+  }
+
+  activeAlarmSources.forEach((source) => {
+    try {
+      source.stop();
+    } catch {
+      // The note may already have ended.
+    }
+  });
+  activeAlarmSources = [];
+  isAlarming = false;
+  alarmMessage = "";
+
+  if (audioContext && audioContext.state !== "closed") {
+    audioContext.close();
+  }
+  audioContext = null;
+  render();
 }
 
 function completeCurrentMode() {
   const completedMode = mode;
   stopTimer();
-  playChime();
 
   if (completedMode === "focus") {
     rounds += 1;
     saveTodayRounds();
     switchMode("break");
-    statusElement.textContent = "完成一个番茄，现在休息 5 分钟。";
+    startAlarm("完成一个番茄，现在休息 5 分钟。");
   } else {
     switchMode("focus");
-    statusElement.textContent = completedMode === "nap"
+    startAlarm(completedMode === "nap"
       ? "小憩结束，精神满格，准备下一轮专注。"
-      : "休息结束，准备下一轮专注。";
+      : "休息结束，准备下一轮专注。");
   }
 }
 
@@ -167,6 +244,7 @@ function updateTimer() {
 
 function startTimer() {
   if (isRunning) return;
+  ensureAudioContext();
   isRunning = true;
   targetTime = Date.now() + remainingSeconds * 1000;
   intervalId = window.setInterval(updateTimer, 250);
@@ -202,6 +280,7 @@ toggleButton.addEventListener("click", () => {
 });
 
 resetButton.addEventListener("click", resetTimer);
+stopAlarmButton.addEventListener("click", stopAlarm);
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => switchMode(button.dataset.mode));
