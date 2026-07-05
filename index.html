@@ -5,6 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Yueren 的小时钟，一个打开即用的番茄专注倒计时工具。" />
     <title>Yueren 的小时钟</title>
+    <link rel="stylesheet" href="styles.css?v=yueren-logo-1" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="brand" aria-label="Yueren 的小时钟">
+        <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="clock-face" x1="12" y1="10" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ff8b6f" />
+              <stop offset="1" stop-color="#e34f3b" />
+            </linearGradient>
+          </defs>
+          <path class="clock-leaf" d="M38 9c4-5 9-5 12-3-1 5-5 8-12 7" />
+          <path class="clock-crown" d="M27 8h10" />
+          <circle class="clock-case" cx="32" cy="35" r="24" />
+          <circle class="clock-dial" cx="32" cy="35" r="18" />
+          <path class="clock-ticks" d="M32 20v3M47 35h-3M32 50v-3M17 35h3" />
+          <path class="clock-y" d="M24 27l8 8 8-8M32 35v10" />
+          <circle class="clock-pin" cx="32" cy="35" r="2.4" />
+        </svg>
+        <span class="brand-copy">
+          <strong class="brand-name">Yueren</strong>
+          <span class="brand-subtitle">的小时钟</span>
+        </span>
+      </header>
+
+      <section class="timer-card" aria-labelledby="timer-heading">
+        <div class="mode-switch" aria-label="计时模式">
+          <button class="mode-button active" data-mode="focus" type="button">专注</button>
+          <button class="mode-button" data-mode="break" type="button">休息</button>
+          <button class="mode-button" data-mode="nap" type="button">小憩</button>
+        </div>
+
+        <p class="eyebrow" id="timer-heading">准备好了吗？</p>
+
+        <div class="timer-visual">
+          <svg class="progress-ring" viewBox="0 0 240 240" aria-hidden="true">
+            <circle class="progress-track" cx="120" cy="120" r="106" />
+            <circle class="progress-value" cx="120" cy="120" r="106" />
+          </svg>
+          <div class="time" id="time" role="timer" aria-live="off">25:00</div>
+        </div>
+
+        <div class="actions">
+          <button class="primary-button" id="toggle-button" type="button">开始专注</button>
+          <button class="secondary-button" id="reset-button" type="button">重置</button>
+          <button class="alarm-button" id="stop-alarm-button" type="button" hidden>停止响铃</button>
+        </div>
+
+        <p class="hint" id="status" aria-live="polite">选择一件重要的事，然后开始。</p>
+      </section>
+
+      <section class="today-card" aria-label="今日专注统计">
+        <div>
+          <p class="today-label">今日完成</p>
+          <p class="today-value"><span id="rounds">0</span> 个番茄</p>
+        </div>
+        <div class="tomato-dots" id="tomato-dots" aria-hidden="true"></div>
+      </section>
+
+      <footer>Yueren 的小时钟 · 专注一小段，推进一大步。</footer>
+    </main>
+
+    <script src="app.js?v=yueren-logo-1"></script>
+  </body>
+</html>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Yueren 的小时钟，一个打开即用的番茄专注倒计时工具。" />
+    <title>Yueren 的小时钟</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
