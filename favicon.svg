@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="sky" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eff6ff"/>
+      <stop offset="1" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="18" y1="14" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#facc15"/>
+      <stop offset="0.48" stop-color="#fb923c"/>
+      <stop offset="1" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="energy" x1="16" y1="48" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22c55e"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="url(#sky)"/>
+  <path d="M14 42h36" fill="none" stroke="#1d4ed8" stroke-linecap="round" stroke-width="4"/>
+  <path d="M18 49h28" fill="none" stroke="url(#energy)" stroke-linecap="round" stroke-width="5"/>
+  <circle cx="32" cy="30" r="15" fill="url(#sun)"/>
+  <path d="M32 12v5M32 43v5M14 30h5M45 30h5M19.3 17.3l3.5 3.5M41.2 39.2l3.5 3.5M44.7 17.3l-3.5 3.5M22.8 39.2l-3.5 3.5" fill="none" stroke="#f97316" stroke-linecap="round" stroke-width="3"/>
+  <path d="M25 31.5l5 5 10-12" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+</svg>
