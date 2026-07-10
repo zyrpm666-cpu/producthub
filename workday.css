@@ -9,6 +9,7 @@
   --sun-deep: #f97316;
   --blue: #2563eb;
   --green: #16a34a;
+  --energy-level: 100%;
   --shadow: 0 28px 90px rgba(47, 62, 91, 0.16);
   font-family:
     Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -217,6 +218,8 @@ h1 {
 
 .morning-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   min-height: 390px;
   padding: 34px;
@@ -239,6 +242,10 @@ h1 {
     conic-gradient(from 28deg, #f97316, #ffcf67, #54d28c, #60a5fa, #f97316);
   filter: drop-shadow(0 22px 44px rgba(249, 115, 22, 0.22));
   animation: glow 4.8s ease-in-out infinite;
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease,
+    opacity 0.35s ease;
 }
 
 .energy-score {
@@ -246,6 +253,26 @@ h1 {
   font-size: 76px;
   font-weight: 900;
   letter-spacing: -0.08em;
+  transition: color 0.25s ease;
+}
+
+.energy-meter {
+  overflow: hidden;
+  width: 100%;
+  height: 12px;
+  margin: 0 0 16px;
+  border-radius: 999px;
+  background: rgba(102, 112, 133, 0.12);
+  box-shadow: inset 0 1px 3px rgba(47, 62, 91, 0.1);
+}
+
+.energy-meter span {
+  display: block;
+  width: var(--energy-level);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e, #facc15, #f97316);
+  transition: width 0.45s ease;
 }
 
 .card-note {
@@ -254,6 +281,29 @@ h1 {
   color: var(--muted);
   font-size: 16px;
   line-height: 1.7;
+}
+
+.reset-energy-button {
+  width: fit-content;
+  margin-top: auto;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 999px;
+  padding: 10px 15px;
+  color: #1d4ed8;
+  background: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 850;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.reset-energy-button:hover {
+  transform: translateY(-1px);
+  background: white;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
 }
 
 .dashboard {
@@ -333,6 +383,27 @@ h1 {
 .is-started .primary-button {
   background: linear-gradient(135deg, var(--green), #2563eb);
   box-shadow: 0 18px 38px rgba(37, 99, 235, 0.22);
+}
+
+.is-started .morning-card {
+  box-shadow: 0 28px 90px rgba(37, 99, 235, 0.16);
+}
+
+.is-started .halo {
+  animation-duration: 3.2s;
+}
+
+.low-energy .energy-score {
+  color: #ea580c;
+}
+
+.low-energy .halo {
+  opacity: 0.78;
+  filter: drop-shadow(0 18px 36px rgba(249, 115, 22, 0.14));
+}
+
+.low-energy .energy-meter span {
+  background: linear-gradient(90deg, #facc15, #f97316, #ef4444);
 }
 
 @keyframes glow {
