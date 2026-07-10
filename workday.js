@@ -7,6 +7,9 @@ const energyScore = document.querySelector("#energy-score");
 const energyFill = document.querySelector("#energy-fill");
 const energyNote = document.querySelector("#energy-note");
 const resetEnergyButton = document.querySelector("#reset-energy-button");
+const locateWeatherButton = document.querySelector("#locate-weather-button");
+const locationChip = document.querySelector("#location-chip");
+const locationText = document.querySelector("#location-text");
 
 const SLOGAN_REFRESH_INTERVAL = 5 * 60 * 1000;
 const ENERGY_DRAIN_INTERVAL = 60 * 1000;
@@ -148,8 +151,60 @@ function resetEnergy() {
     : "Nice reset. Take one breath, then return to the next clear step.";
 }
 
+function formatCoordinate(value, positiveDirection, negativeDirection) {
+  const direction = value >= 0 ? positiveDirection : negativeDirection;
+  return `${Math.abs(value).toFixed(3)}°${direction}`;
+}
+
+function setWeatherLocationStatus(message, isVisible = true) {
+  if (!locationChip || !locationText) return;
+
+  locationText.textContent = message;
+  locationChip.hidden = !isVisible;
+}
+
+function locateWeather() {
+  if (!locateWeatherButton) return;
+
+  if (!("geolocation" in navigator)) {
+    setWeatherLocationStatus("Location is not supported by this browser.");
+    return;
+  }
+
+  locateWeatherButton.disabled = true;
+  locateWeatherButton.textContent = "Locating...";
+  setWeatherLocationStatus("Waiting for browser permission...");
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude, accuracy } = position.coords;
+      const lat = formatCoordinate(latitude, "N", "S");
+      const lon = formatCoordinate(longitude, "E", "W");
+      const accuracyText = accuracy ? ` · ±${Math.round(accuracy)}m` : "";
+
+      setWeatherLocationStatus(`Current area: ${lat}, ${lon}${accuracyText}`);
+      locateWeatherButton.textContent = "Location Ready";
+      locateWeatherButton.disabled = false;
+    },
+    () => {
+      setWeatherLocationStatus("Location permission was not granted. You can still open the full radar map.");
+      locateWeatherButton.textContent = "Try Location Again";
+      locateWeatherButton.disabled = false;
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 10 * 60 * 1000,
+    }
+  );
+}
+
 startButton.addEventListener("click", startToday);
 resetEnergyButton.addEventListener("click", resetEnergy);
+
+if (locateWeatherButton) {
+  locateWeatherButton.addEventListener("click", locateWeather);
+}
 
 renderToday();
 pickRandomSlogan();
