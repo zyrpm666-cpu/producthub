@@ -1,13 +1,9 @@
 const todayText = document.querySelector("#today-text");
 const heroTitle = document.querySelector("#hero-title");
 const heroSubtitle = document.querySelector("#hero-subtitle");
-const dailyMantra = document.querySelector("#daily-mantra");
 const energyScore = document.querySelector("#energy-score");
 const energyFill = document.querySelector("#energy-fill");
 const energyNote = document.querySelector("#energy-note");
-const locateWeatherButton = document.querySelector("#locate-weather-button");
-const locationChip = document.querySelector("#location-chip");
-const locationText = document.querySelector("#location-text");
 
 const SLOGAN_REFRESH_INTERVAL = 5 * 60 * 1000;
 const ENERGY_REFRESH_INTERVAL = 30 * 1000;
@@ -31,13 +27,6 @@ const monthNames = [
   "November",
   "December",
 ];
-const mantras = [
-  "I will move through today with clarity, steadiness, and action.",
-  "Follow the main thread first. Less hesitation, more forward motion.",
-  "Give your attention to what truly matters; clarity will come through action.",
-  "It does not need to be perfect. It only needs to begin.",
-];
-
 const slogans = [
   {
     title: "New day. Fresh start.",
@@ -142,67 +131,8 @@ function renderEnergy() {
   document.body.classList.toggle("low-energy", roundedEnergy < 45);
 }
 
-function pickDailyMantra() {
-  const now = new Date();
-  const index = now.getDate() % mantras.length;
-  dailyMantra.textContent = mantras[index];
-}
-
-function formatCoordinate(value, positiveDirection, negativeDirection) {
-  const direction = value >= 0 ? positiveDirection : negativeDirection;
-  return `${Math.abs(value).toFixed(3)}°${direction}`;
-}
-
-function setWeatherLocationStatus(message, isVisible = true) {
-  if (!locationChip || !locationText) return;
-
-  locationText.textContent = message;
-  locationChip.hidden = !isVisible;
-}
-
-function locateWeather() {
-  if (!locateWeatherButton) return;
-
-  if (!("geolocation" in navigator)) {
-    setWeatherLocationStatus("Location is not supported by this browser.");
-    return;
-  }
-
-  locateWeatherButton.disabled = true;
-  locateWeatherButton.textContent = "Locating...";
-  setWeatherLocationStatus("Waiting for browser permission...");
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude, accuracy } = position.coords;
-      const lat = formatCoordinate(latitude, "N", "S");
-      const lon = formatCoordinate(longitude, "E", "W");
-      const accuracyText = accuracy ? ` · ±${Math.round(accuracy)}m` : "";
-
-      setWeatherLocationStatus(`Current area: ${lat}, ${lon}${accuracyText}`);
-      locateWeatherButton.textContent = "Location Ready";
-      locateWeatherButton.disabled = false;
-    },
-    () => {
-      setWeatherLocationStatus("Location permission was not granted. You can still open the full radar map.");
-      locateWeatherButton.textContent = "Try Location Again";
-      locateWeatherButton.disabled = false;
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 10 * 60 * 1000,
-    }
-  );
-}
-
-if (locateWeatherButton) {
-  locateWeatherButton.addEventListener("click", locateWeather);
-}
-
 renderToday();
 pickRandomSlogan();
-pickDailyMantra();
 renderEnergy();
 window.setInterval(pickRandomSlogan, SLOGAN_REFRESH_INTERVAL);
 window.setInterval(renderEnergy, ENERGY_REFRESH_INTERVAL);
