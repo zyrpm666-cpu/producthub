@@ -9,7 +9,7 @@
     />
     <title>Yueren Workday Launch</title>
     <link rel="icon" href="favicon.svg?v=workday-favicon-1" type="image/svg+xml" />
-    <link rel="stylesheet" href="workday.css?v=time-energy-1" />
+    <link rel="stylesheet" href="workday.css?v=remove-lower-sections-1" />
   </head>
   <body>
     <main class="workday-shell">
@@ -50,68 +50,8 @@
         </aside>
       </section>
 
-      <section class="dashboard" aria-label="Workday launch checklist">
-        <article class="panel intention-panel">
-          <p class="panel-kicker">Daily Intention</p>
-          <h2 id="daily-mantra">I will move through today with clarity, steadiness, and action.</h2>
-        </article>
-
-        <article class="panel">
-          <p class="panel-kicker">Three Things Today</p>
-          <ol class="todo-list">
-            <li>
-              <span class="todo-index">01</span>
-              <span>Do the most important thing first, not the loudest thing.</span>
-            </li>
-            <li>
-              <span class="todo-index">02</span>
-              <span>Pause every 25 minutes to realign your direction.</span>
-            </li>
-            <li>
-              <span class="todo-index">03</span>
-              <span>Before you close, leave tomorrow a clear starting point.</span>
-            </li>
-          </ol>
-        </article>
-
-      </section>
-
-      <section class="weather-card" aria-labelledby="weather-title">
-        <div class="weather-copy">
-          <p class="panel-kicker">Weather Radar</p>
-          <h2 id="weather-title">Check the sky before you start.</h2>
-          <p class="weather-note" id="weather-note">
-            See official China Weather radar, cloud, rain, wind, temperature, and humidity layers in one place.
-          </p>
-
-          <div class="location-chip" id="location-chip" hidden>
-            <span class="location-dot" aria-hidden="true"></span>
-            <span id="location-text">Location ready</span>
-          </div>
-
-          <div class="weather-actions">
-            <button class="weather-button" id="locate-weather-button" type="button">Use My Location</button>
-            <a class="weather-link" href="https://www.weather.com.cn/radar/" target="_blank" rel="noreferrer">
-              Open Full Radar
-            </a>
-          </div>
-        </div>
-
-        <div class="weather-map" aria-label="China Weather radar preview">
-          <iframe
-            src="https://www.weather.com.cn/radar/"
-            title="China Weather radar map"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-          ></iframe>
-          <div class="weather-map-fallback">
-            <span>Official radar map</span>
-            <a href="https://www.weather.com.cn/radar/" target="_blank" rel="noreferrer">Open map</a>
-          </div>
-        </div>
-      </section>
     </main>
 
-    <script src="workday.js?v=time-energy-2"></script>
+    <script src="workday.js?v=remove-lower-sections-1"></script>
   </body>
 </html>
