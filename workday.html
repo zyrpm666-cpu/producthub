@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Yueren's workday launch page: a fresh day, a fresh start, and a bright state of mind."
+    />
+    <title>Yueren Workday Launch</title>
+    <link rel="stylesheet" href="workday.css" />
+  </head>
+  <body>
+    <main class="workday-shell">
+      <nav class="topbar" aria-label="Page navigation">
+        <a class="brand" href="workday.html" aria-label="Yueren Workday Launch">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="sun-core"></span>
+          </span>
+          <span>
+            <strong>Yueren</strong>
+            <small>WORKDAY LAUNCH</small>
+          </span>
+        </a>
+        <a class="nav-link" href="index.html">Open Timer</a>
+      </nav>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow" id="today-text">Today is a fresh start</p>
+          <h1 id="hero-title">New day. Fresh start.</h1>
+          <p class="hero-subtitle">
+            Show up bright. Clear the noise. Move what matters with steady focus.
+          </p>
+
+          <div class="hero-actions">
+            <button class="primary-button" id="start-button" type="button">Start the Day</button>
+            <a class="secondary-button" href="index.html">Focus for 25 Minutes</a>
+          </div>
+        </div>
+
+        <aside class="morning-card" aria-label="Daily energy card">
+          <div class="halo" aria-hidden="true"></div>
+          <p class="card-label">Today’s Energy</p>
+          <p class="energy-score"><span id="energy-score">100</span>%</p>
+          <p class="card-note" id="energy-note">Fully charged and ready for the most important work.</p>
+        </aside>
+      </section>
+
+      <section class="dashboard" aria-label="Workday launch checklist">
+        <article class="panel intention-panel">
+          <p class="panel-kicker">Daily Intention</p>
+          <h2 id="daily-mantra">I will move through today with clarity, steadiness, and action.</h2>
+        </article>
+
+        <article class="panel">
+          <p class="panel-kicker">Three Things Today</p>
+          <ol class="todo-list">
+            <li>
+              <span class="todo-index">01</span>
+              <span>Do the most important thing first, not the loudest thing.</span>
+            </li>
+            <li>
+              <span class="todo-index">02</span>
+              <span>Pause every 25 minutes to realign your direction.</span>
+            </li>
+            <li>
+              <span class="todo-index">03</span>
+              <span>Before you close, leave tomorrow a clear starting point.</span>
+            </li>
+          </ol>
+        </article>
+
+        <article class="panel breathing-panel">
+          <p class="panel-kicker">30-Second Reset</p>
+          <div class="breathing-orb" aria-hidden="true"></div>
+          <p>Breathe in, stand tall. Breathe out, land here. Today does not need perfection — only a beginning.</p>
+        </article>
+      </section>
+    </main>
+
+    <script src="workday.js"></script>
+  </body>
+</html>
