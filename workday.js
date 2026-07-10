@@ -1,8 +1,12 @@
 const todayText = document.querySelector("#today-text");
+const heroTitle = document.querySelector("#hero-title");
+const heroSubtitle = document.querySelector("#hero-subtitle");
 const startButton = document.querySelector("#start-button");
 const dailyMantra = document.querySelector("#daily-mantra");
 const energyScore = document.querySelector("#energy-score");
 const energyNote = document.querySelector("#energy-note");
+
+const SLOGAN_REFRESH_INTERVAL = 5 * 60 * 1000;
 
 const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const monthNames = [
@@ -26,10 +30,55 @@ const mantras = [
   "It does not need to be perfect. It only needs to begin.",
 ];
 
+const slogans = [
+  {
+    title: "New day. Fresh start.",
+    subtitle: "Show up bright. Clear the noise. Move what matters with steady focus.",
+  },
+  {
+    title: "Rise clear. Work bright.",
+    subtitle: "Bring your best energy to the first meaningful step.",
+  },
+  {
+    title: "Start light. Move strong.",
+    subtitle: "A calm mind, a clean desk, and one priority in motion.",
+  },
+  {
+    title: "Begin with intention.",
+    subtitle: "Choose the signal over the noise and let momentum build.",
+  },
+  {
+    title: "Fresh mind. Full power.",
+    subtitle: "Step into the day awake, steady, and ready to create.",
+  },
+  {
+    title: "One morning. One mission.",
+    subtitle: "Protect your attention and give the day a clear direction.",
+  },
+];
+
+let currentSloganIndex = -1;
+
 function renderToday() {
   const now = new Date();
   const dateText = `${weekdayNames[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
   todayText.textContent = `${dateText} · A fresh start`;
+}
+
+function pickRandomSlogan() {
+  if (slogans.length === 0) return;
+
+  let nextIndex = Math.floor(Math.random() * slogans.length);
+
+  if (slogans.length > 1) {
+    while (nextIndex === currentSloganIndex) {
+      nextIndex = Math.floor(Math.random() * slogans.length);
+    }
+  }
+
+  currentSloganIndex = nextIndex;
+  heroTitle.textContent = slogans[nextIndex].title;
+  heroSubtitle.textContent = slogans[nextIndex].subtitle;
 }
 
 function pickDailyMantra() {
@@ -48,4 +97,6 @@ function startToday() {
 startButton.addEventListener("click", startToday);
 
 renderToday();
+pickRandomSlogan();
 pickDailyMantra();
+window.setInterval(pickRandomSlogan, SLOGAN_REFRESH_INTERVAL);
