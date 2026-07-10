@@ -1,20 +1,20 @@
 const todayText = document.querySelector("#today-text");
 const heroTitle = document.querySelector("#hero-title");
 const heroSubtitle = document.querySelector("#hero-subtitle");
-const startButton = document.querySelector("#start-button");
 const dailyMantra = document.querySelector("#daily-mantra");
 const energyScore = document.querySelector("#energy-score");
 const energyFill = document.querySelector("#energy-fill");
 const energyNote = document.querySelector("#energy-note");
-const resetEnergyButton = document.querySelector("#reset-energy-button");
 const locateWeatherButton = document.querySelector("#locate-weather-button");
 const locationChip = document.querySelector("#location-chip");
 const locationText = document.querySelector("#location-text");
 
 const SLOGAN_REFRESH_INTERVAL = 5 * 60 * 1000;
-const ENERGY_DRAIN_INTERVAL = 60 * 1000;
-const ENERGY_DRAIN_STEP = 1;
-const ENERGY_RESET_BOOST = 8;
+const ENERGY_REFRESH_INTERVAL = 30 * 1000;
+const ENERGY_START_HOUR = 10;
+const ENERGY_START_MINUTE = 0;
+const ENERGY_END_HOUR = 21;
+const ENERGY_END_MINUTE = 30;
 
 const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const monthNames = [
@@ -66,8 +66,6 @@ const slogans = [
 ];
 
 let currentSloganIndex = -1;
-let currentEnergy = 100;
-let energyIntervalId = null;
 
 function renderToday() {
   const now = new Date();
@@ -93,22 +91,49 @@ function pickRandomSlogan() {
 
 function energyNoteFor(score) {
   if (score >= 85) {
-    return "Fully charged. Use this clear window for your most important work.";
+    return "The day window is still fresh. Use this clear stretch for your most important work.";
   }
 
   if (score >= 65) {
-    return "Good energy. Keep the pace steady and protect your attention.";
+    return "Plenty of time remains. Keep the pace steady and protect your attention.";
   }
 
   if (score >= 40) {
-    return "Energy is dipping. A short reset can help you return sharper.";
+    return "The workday is moving. Choose one important thing and keep it in motion.";
   }
 
-  return "Low battery. Step away for a real break before pushing harder.";
+  if (score > 0) {
+    return "The day is closing. Wrap the loose ends and leave tomorrow a clean starting point.";
+  }
+
+  return "The workday window is complete. Let the system cool down and protect your evening.";
+}
+
+function getTodayTime(hour, minute) {
+  const time = new Date();
+  time.setHours(hour, minute, 0, 0);
+  return time;
+}
+
+function calculateTimeEnergy(now = new Date()) {
+  const start = getTodayTime(ENERGY_START_HOUR, ENERGY_START_MINUTE);
+  const end = getTodayTime(ENERGY_END_HOUR, ENERGY_END_MINUTE);
+
+  if (now < start) {
+    return 100;
+  }
+
+  if (now >= end) {
+    return 0;
+  }
+
+  const totalWindow = end.getTime() - start.getTime();
+  const remainingWindow = end.getTime() - now.getTime();
+  return Math.max(0, Math.min(100, (remainingWindow / totalWindow) * 100));
 }
 
 function renderEnergy() {
-  const roundedEnergy = Math.round(currentEnergy);
+  const roundedEnergy = Math.round(calculateTimeEnergy());
 
   energyScore.textContent = String(roundedEnergy);
   energyFill.style.width = `${roundedEnergy}%`;
@@ -117,38 +142,10 @@ function renderEnergy() {
   document.body.classList.toggle("low-energy", roundedEnergy < 45);
 }
 
-function drainEnergy() {
-  currentEnergy = Math.max(20, currentEnergy - ENERGY_DRAIN_STEP);
-  renderEnergy();
-}
-
 function pickDailyMantra() {
   const now = new Date();
   const index = now.getDate() % mantras.length;
   dailyMantra.textContent = mantras[index];
-}
-
-function startToday() {
-  document.body.classList.add("is-started");
-  startButton.textContent = "Working";
-  startButton.disabled = true;
-  currentEnergy = 100;
-  renderEnergy();
-
-  if (energyIntervalId !== null) {
-    window.clearInterval(energyIntervalId);
-  }
-
-  energyIntervalId = window.setInterval(drainEnergy, ENERGY_DRAIN_INTERVAL);
-  window.setTimeout(drainEnergy, 900);
-}
-
-function resetEnergy() {
-  currentEnergy = Math.min(100, currentEnergy + ENERGY_RESET_BOOST);
-  renderEnergy();
-  energyNote.textContent = currentEnergy === 100
-    ? "Back to full charge. Choose one priority and begin again."
-    : "Nice reset. Take one breath, then return to the next clear step.";
 }
 
 function formatCoordinate(value, positiveDirection, negativeDirection) {
@@ -199,9 +196,6 @@ function locateWeather() {
   );
 }
 
-startButton.addEventListener("click", startToday);
-resetEnergyButton.addEventListener("click", resetEnergy);
-
 if (locateWeatherButton) {
   locateWeatherButton.addEventListener("click", locateWeather);
 }
@@ -211,3 +205,4 @@ pickRandomSlogan();
 pickDailyMantra();
 renderEnergy();
 window.setInterval(pickRandomSlogan, SLOGAN_REFRESH_INTERVAL);
+window.setInterval(renderEnergy, ENERGY_REFRESH_INTERVAL);
