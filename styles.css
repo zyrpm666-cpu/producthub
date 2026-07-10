@@ -112,6 +112,27 @@ button {
   letter-spacing: 0.13em;
 }
 
+.workday-entry {
+  display: flex;
+  width: fit-content;
+  margin: -10px auto 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 16px;
+  color: var(--tomato-dark);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 8px 22px rgba(97, 52, 42, 0.08);
+  font-size: 13px;
+  font-weight: 760;
+  text-decoration: none;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.workday-entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(97, 52, 42, 0.12);
+}
+
 .timer-card,
 .today-card {
   border: 1px solid var(--line);
