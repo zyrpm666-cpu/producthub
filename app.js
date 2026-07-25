@@ -24,6 +24,7 @@ const MODE_COPY = {
 
 const CIRCUMFERENCE = 2 * Math.PI * 106;
 const STORAGE_KEY = "focus-tomato-daily-rounds";
+const PAGE_TITLE = document.body.dataset.timerTitle || "Yueren 的小时钟";
 
 const timeElement = document.querySelector("#time");
 const statusElement = document.querySelector("#status");
@@ -93,10 +94,10 @@ function render() {
   roundsElement.textContent = String(rounds);
   progressCircle.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - progress));
   document.title = isAlarming
-    ? "⏰ 时间到 · Yueren 的小时钟"
+    ? `⏰ 时间到 · ${PAGE_TITLE}`
     : isRunning
-      ? `${formattedTime} · Yueren 的小时钟`
-      : "Yueren 的小时钟";
+      ? `${formattedTime} · ${PAGE_TITLE}`
+      : PAGE_TITLE;
   document.body.classList.toggle("break-mode", mode !== "focus");
 
   modeButtons.forEach((button) => {

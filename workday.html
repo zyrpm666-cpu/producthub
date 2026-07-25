@@ -10,9 +10,9 @@
     <meta name="theme-color" content="#0b1220" />
     <title>Yueren Workday Launch</title>
     <link rel="icon" href="favicon.svg?v=workday-favicon-1" type="image/svg+xml" />
-    <link rel="stylesheet" href="workday.css?v=agent-platform-link-1" />
+    <link rel="stylesheet" href="workday.css?v=integrated-timer-1" />
   </head>
-  <body>
+  <body data-timer-title="Yueren Workday Launch">
     <div class="ambient ambient-sun" aria-hidden="true"></div>
     <div class="ambient ambient-sky" aria-hidden="true"></div>
     <div class="page-grid" aria-hidden="true"></div>
@@ -30,16 +30,6 @@
         </a>
 
         <div class="topbar-actions">
-          <a class="nav-link timer-link" href="index.html">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="13" r="7" />
-                <path d="M9 2h6M12 13V8M12 13l3 2" />
-              </svg>
-            </span>
-            <span>Open Timer</span>
-          </a>
-
           <a
             class="nav-link workspace-link"
             href="https://arena.tiktokarenax.com/tools/loginentry?hideLayout=true&amp;skipInit=true&amp;returnUrl=https%3A%2F%2Farena.tiktokarenax.com%2Fcommunication%2Fworkspace"
@@ -112,7 +102,7 @@
           </p>
 
           <div class="hero-actions">
-            <a class="primary-button" href="index.html">
+            <a class="primary-button" href="#focus-timer">
               <span>Start a focus session</span>
               <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M4 10h12M11 5l5 5-5 5" />
@@ -152,6 +142,61 @@
         </aside>
       </section>
 
+      <section class="timer-studio" id="focus-timer" aria-labelledby="focus-timer-title">
+        <div class="timer-studio-header">
+          <div>
+            <p class="timer-kicker">FOCUS STUDIO</p>
+            <h2 id="focus-timer-title">Make the next block count.</h2>
+          </div>
+
+          <div class="mode-switch" aria-label="Timer mode">
+            <button class="mode-button active" data-mode="focus" type="button">专注</button>
+            <button class="mode-button" data-mode="break" type="button">休息</button>
+            <button class="mode-button" data-mode="nap" type="button">小憩</button>
+          </div>
+        </div>
+
+        <div class="timer-studio-body">
+          <div class="timer-display-column">
+            <p class="timer-phase" id="timer-heading">READY WHEN YOU ARE</p>
+            <div class="timer-visual">
+              <svg class="progress-ring" viewBox="0 0 240 240" aria-hidden="true">
+                <circle class="progress-track" cx="120" cy="120" r="106" />
+                <circle class="progress-value" cx="120" cy="120" r="106" />
+              </svg>
+              <div class="time" id="time" role="timer" aria-live="off">25:00</div>
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <p class="timer-control-label">CURRENT SESSION</p>
+            <p class="timer-status" id="status" aria-live="polite">
+              选择一件重要的事，然后开始。
+            </p>
+
+            <div class="timer-actions">
+              <button class="timer-primary-button" id="toggle-button" type="button">
+                开始专注
+              </button>
+              <button class="timer-secondary-button" id="reset-button" type="button">
+                重置
+              </button>
+              <button class="timer-alarm-button" id="stop-alarm-button" type="button" hidden>
+                停止响铃
+              </button>
+            </div>
+
+            <div class="today-summary" aria-label="今日专注统计">
+              <div>
+                <p class="today-summary-label">TODAY’S OUTPUT</p>
+                <p class="today-summary-value"><span id="rounds">0</span> 个番茄</p>
+              </div>
+              <div class="tomato-dots" id="tomato-dots" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer class="page-footer">
         <span>Protect your attention.</span>
         <span class="footer-line" aria-hidden="true"></span>
@@ -160,5 +205,6 @@
     </main>
 
     <script src="workday.js?v=morning-studio-1"></script>
+    <script src="app.js?v=integrated-home-1"></script>
   </body>
 </html>
