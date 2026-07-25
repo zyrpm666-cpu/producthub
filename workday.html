@@ -7,51 +7,116 @@
       name="description"
       content="Yueren's workday launch page: a fresh day, a fresh start, and a bright state of mind."
     />
+    <meta name="theme-color" content="#0b1220" />
     <title>Yueren Workday Launch</title>
     <link rel="icon" href="favicon.svg?v=workday-favicon-1" type="image/svg+xml" />
-    <link rel="stylesheet" href="workday.css?v=remove-lower-sections-1" />
+    <link rel="stylesheet" href="workday.css?v=morning-studio-1" />
   </head>
   <body>
+    <div class="ambient ambient-sun" aria-hidden="true"></div>
+    <div class="ambient ambient-sky" aria-hidden="true"></div>
+    <div class="page-grid" aria-hidden="true"></div>
+
     <main class="workday-shell">
       <nav class="topbar" aria-label="Page navigation">
         <a class="brand" href="workday.html" aria-label="Yueren Workday Launch">
           <span class="brand-mark" aria-hidden="true">
             <span class="sun-core"></span>
           </span>
-          <span>
+          <span class="brand-copy">
             <strong>Yueren</strong>
             <small>WORKDAY LAUNCH</small>
           </span>
         </a>
-        <div style="display: inline-flex; align-items: center; gap: 12px;">   <a   class="nav-link"   href="index.html"   style="display: inline-flex; align-items: center; gap: 9px;" >   <span     aria-hidden="true"     style="display: inline-grid; width: 26px; height: 26px; place-items: center; border-radius: 10px; background: linear-gradient(135deg, #fff4d8, #ffe1a8); box-shadow: 0 8px 18px rgba(249, 115, 22, 0.14);"   >     <svg width="17" height="17" viewBox="0 0 24 24" fill="none">       <circle cx="12" cy="13" r="7" stroke="#f97316" stroke-width="2.4" />       <path d="M9 2h6" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" />       <path d="M12 13V8" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" />       <path d="M12 13l3 2" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" />     </svg>   </span>   <span>Open Timer</span> </a>    <a     href="https://arena.tiktok-row.net/ai_assistant"     target="_blank"     rel="noreferrer noopener"     aria-label="Open Rena AI Assistant in a new tab"     style="display: inline-flex; min-height: 48px; align-items: center; gap: 10px; border: 1px solid rgba(37, 99, 235, 0.14); border-radius: 999px; padding: 6px 16px 6px 7px; color: #172554; background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 255, 0.72)), rgba(255, 255, 255, 0.68); box-shadow: 0 14px 34px rgba(37, 99, 235, 0.11); font-size: 14px; font-weight: 850; backdrop-filter: blur(18px);"   >     <img       src="Rena_Use.png"       alt=""       aria-hidden="true"       style="width: 36px; height: 36px; border-radius: 14px; object-fit: cover; box-shadow: 0 8px 18px rgba(96, 165, 250, 0.18);"     />     <span>Rena AI</span>   </a> </div>
+
+        <div class="topbar-actions">
+          <a class="nav-link timer-link" href="index.html">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="13" r="7" />
+                <path d="M9 2h6M12 13V8M12 13l3 2" />
+              </svg>
+            </span>
+            <span>Open Timer</span>
+          </a>
+
+          <a
+            class="nav-link rena-link"
+            href="https://arena.tiktok-row.net/ai_assistant"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Open Rena AI Assistant in a new tab"
+          >
+            <img src="Rena_Use.png" alt="" aria-hidden="true" />
+            <span>Rena AI</span>
+            <svg class="external-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M6 3h7v7M13 3 5 11" />
+              <path d="M7 5H3v8h8V9" />
+            </svg>
+          </a>
+        </div>
       </nav>
 
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow" id="today-text">Today is a fresh start</p>
+          <div class="status-row">
+            <span class="live-dot" aria-hidden="true"></span>
+            <p class="eyebrow" id="today-text">Today is a fresh start</p>
+          </div>
+
           <h1 id="hero-title">New day. Fresh start.</h1>
           <p class="hero-subtitle" id="hero-subtitle">
             Show up bright. Clear the noise. Move what matters with steady focus.
           </p>
 
           <div class="hero-actions">
-            <a class="secondary-button" href="index.html">Focus for 25 Minutes</a>
+            <a class="primary-button" href="index.html">
+              <span>Start a focus session</span>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4 10h12M11 5l5 5-5 5" />
+              </svg>
+            </a>
+            <span class="session-note">25 minutes · one clear priority</span>
           </div>
         </div>
 
         <aside class="morning-card" aria-label="Daily energy card">
-          <div class="halo" aria-hidden="true"></div>
-          <p class="card-label">Today’s Energy</p>
-          <p class="energy-score"><span id="energy-score">100</span>%</p>
+          <div class="card-header">
+            <div>
+              <p class="card-label">Today’s Energy</p>
+              <p class="card-window">10:00 — 21:30</p>
+            </div>
+            <span class="card-status">LIVE</span>
+          </div>
+
+          <div class="energy-orbit" aria-hidden="true">
+            <div class="orbit-ring orbit-one"></div>
+            <div class="orbit-ring orbit-two"></div>
+            <div class="halo"></div>
+          </div>
+
+          <div class="score-row">
+            <p class="energy-score"><span id="energy-score">100</span><small>%</small></p>
+            <p class="score-caption">capacity<br />remaining</p>
+          </div>
+
           <div class="energy-meter" aria-hidden="true">
             <span id="energy-fill"></span>
           </div>
-          <p class="card-note" id="energy-note">Fully charged and ready for the most important work.</p>
+
+          <p class="card-note" id="energy-note">
+            Fully charged and ready for the most important work.
+          </p>
         </aside>
       </section>
 
+      <footer class="page-footer">
+        <span>Protect your attention.</span>
+        <span class="footer-line" aria-hidden="true"></span>
+        <span>Move one meaningful thing.</span>
+      </footer>
     </main>
 
-    <script src="workday.js?v=remove-lower-sections-1"></script>
+    <script src="workday.js?v=morning-studio-1"></script>
   </body>
 </html>
