@@ -508,9 +508,32 @@ body.intro-running {
   background: rgba(82, 245, 255, 0.06);
 }
 
-.yr-intro__voice span {
+.yr-intro__voice > span:first-child {
   color: var(--yr-cyan);
   text-shadow: 0 0 10px var(--yr-cyan);
+}
+
+.yr-intro__voice-copy {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.yr-intro__voice-copy b {
+  font: inherit;
+}
+
+.yr-intro__voice-copy em {
+  color: rgba(181, 221, 229, 0.48);
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 620;
+  letter-spacing: 0.11em;
+}
+
+.yr-intro__voice.is-connecting {
+  border-color: rgba(150, 113, 255, 0.56);
+  background: rgba(150, 113, 255, 0.1);
 }
 
 .yr-intro__voice.is-speaking {
@@ -522,6 +545,17 @@ body.intro-running {
 
 .yr-intro__voice.is-speaking span {
   animation: yr-intro-signal 0.72s ease-in-out infinite;
+}
+
+.yr-intro.needs-voice .yr-intro__voice {
+  border-color: rgba(82, 245, 255, 0.78);
+  color: #efffff;
+  background:
+    linear-gradient(120deg, rgba(82, 245, 255, 0.17), rgba(120, 89, 255, 0.12));
+  box-shadow:
+    0 0 0 1px rgba(82, 245, 255, 0.1),
+    0 0 30px rgba(82, 245, 255, 0.2);
+  animation: yr-intro-voice-call 1.45s ease-in-out infinite;
 }
 
 .yr-intro__skip {
@@ -540,6 +574,20 @@ body.intro-running {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes yr-intro-voice-call {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(82, 245, 255, 0.25),
+      0 0 24px rgba(82, 245, 255, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 0 7px rgba(82, 245, 255, 0),
+      0 0 36px rgba(82, 245, 255, 0.28);
   }
 }
 
