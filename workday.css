@@ -1058,6 +1058,156 @@ a:focus-visible {
   }
 }
 
+@media (min-width: 1100px) and (min-height: 800px) {
+  .workday-shell {
+    min-height: 100vh;
+    padding-top: 18px;
+    padding-bottom: 14px;
+  }
+
+  .topbar {
+    flex: 0 0 50px;
+  }
+
+  .hero {
+    min-height: 0;
+    flex: 0 0 330px;
+    gap: clamp(46px, 6vw, 82px);
+    margin: 0;
+    padding: 24px 0 18px;
+  }
+
+  h1 {
+    margin: 14px 0 12px;
+    font-size: clamp(58px, 5.2vw, 76px);
+    line-height: 0.94;
+  }
+
+  .hero-subtitle {
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .hero-actions {
+    margin-top: 20px;
+  }
+
+  .primary-button {
+    min-height: 46px;
+    border-radius: 14px;
+  }
+
+  .morning-card {
+    min-height: 300px;
+    border-radius: 26px;
+    padding: 20px;
+  }
+
+  .energy-orbit {
+    width: 126px;
+    height: 126px;
+    margin: 8px auto 2px;
+  }
+
+  .orbit-two {
+    inset: 13px;
+  }
+
+  .halo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .energy-score {
+    font-size: 50px;
+  }
+
+  .energy-score small {
+    font-size: 18px;
+  }
+
+  .energy-meter {
+    margin: 10px 0;
+  }
+
+  .card-note {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .timer-studio {
+    flex: 0 0 auto;
+    margin: 2px 0 10px;
+    border-radius: 26px;
+  }
+
+  .timer-studio-header {
+    padding: 15px 22px 14px;
+  }
+
+  .timer-studio h2 {
+    margin-top: 5px;
+    font-size: 26px;
+  }
+
+  .mode-switch {
+    min-width: 240px;
+  }
+
+  .mode-button {
+    min-height: 34px;
+  }
+
+  .timer-display-column,
+  .timer-controls {
+    min-height: 270px;
+  }
+
+  .timer-display-column {
+    padding: 15px 22px;
+  }
+
+  .timer-visual {
+    width: 208px;
+  }
+
+  .time {
+    font-size: 58px;
+  }
+
+  .timer-controls {
+    padding: 24px 28px 18px;
+  }
+
+  .timer-status {
+    min-height: 38px;
+    margin: 10px 0 14px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .timer-primary-button,
+  .timer-secondary-button,
+  .timer-alarm-button {
+    min-height: 42px;
+  }
+
+  .today-summary {
+    min-height: 56px;
+    padding-top: 12px;
+  }
+
+  .today-summary-value {
+    margin-top: 4px;
+    font-size: 17px;
+  }
+
+  .page-footer {
+    min-height: 20px;
+  }
+}
+
 @media (max-width: 1060px) {
   .workday-shell {
     width: min(900px, calc(100% - 48px));
