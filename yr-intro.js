@@ -10,11 +10,13 @@
   if (!intro || !skipButton || !voiceButton || !voiceLabel) return;
 
   const greeting =
-    "YR, it's great to see you. I hope everything goes smoothly for you today.";
+    "YR. It's great to see you. All systems are online. I hope everything goes smoothly for you today.";
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const timers = [];
   let dismissed = false;
   let voiceStarted = false;
+  let voiceFinished = false;
+  let voiceAttempt = 0;
   let speechUtterance = null;
 
   document.body.classList.add("intro-running");
@@ -103,21 +105,39 @@
     });
   }
 
-  function speakGreeting({ withChime = false } = {}) {
+  function requestVoiceAttention() {
+    if (dismissed || voiceStarted) return;
+    intro.classList.add("needs-voice");
+    voiceLabel.textContent = "Initialize voice";
+    setBootStatus(
+      "VOICE AUTHORIZATION REQUIRED",
+      "Tap Initialize voice to hear your English AI briefing.",
+    );
+    voiceButton.focus({ preventScroll: true });
+  }
+
+  function speakGreeting({ withChime = false, userInitiated = false } = {}) {
     if (!("speechSynthesis" in window)) {
       voiceLabel.textContent = "Voice unavailable";
       voiceButton.disabled = true;
+      setBootStatus("VOICE CHANNEL UNAVAILABLE", "Continue with Skip intro.");
       return false;
     }
+
+    voiceAttempt += 1;
+    intro.classList.remove("needs-voice");
+    voiceButton.classList.add("is-connecting");
+    voiceLabel.textContent = "Connecting voice";
+    setBootStatus("OPENING VOICE CHANNEL", "Calibrating English AI assistant…");
 
     if (withChime) playBootChime();
     window.speechSynthesis.cancel();
 
     speechUtterance = new SpeechSynthesisUtterance(greeting);
     speechUtterance.lang = "en-GB";
-    speechUtterance.rate = 0.88;
-    speechUtterance.pitch = 0.78;
-    speechUtterance.volume = 0.9;
+    speechUtterance.rate = 0.82;
+    speechUtterance.pitch = 0.68;
+    speechUtterance.volume = 1;
 
     const selectedVoice = selectEnglishVoice();
     if (selectedVoice) {
@@ -127,22 +147,50 @@
 
     speechUtterance.onstart = () => {
       voiceStarted = true;
+      voiceFinished = false;
+      intro.classList.remove("needs-voice");
+      voiceButton.classList.remove("is-connecting");
       voiceButton.classList.add("is-speaking");
       voiceLabel.textContent = "Voice online";
-      setBootStatus("WELCOME PROTOCOL ACTIVE", "English voice channel established.");
+      setBootStatus("WELCOME PROTOCOL ACTIVE", "Cinematic English AI channel established.");
     };
 
     speechUtterance.onend = () => {
+      voiceFinished = true;
       voiceButton.classList.remove("is-speaking");
       voiceLabel.textContent = "Replay voice";
+      setBootStatus("ALL SYSTEMS NOMINAL", "Welcome complete. Opening your workspace…");
+      schedule(() => dismissIntro(), prefersReducedMotion ? 250 : 950);
     };
 
     speechUtterance.onerror = () => {
+      voiceStarted = false;
+      voiceButton.classList.remove("is-connecting");
       voiceButton.classList.remove("is-speaking");
-      voiceLabel.textContent = "Enable voice";
+      if (!userInitiated) {
+        requestVoiceAttention();
+      } else {
+        voiceLabel.textContent = "Try voice again";
+        setBootStatus("VOICE CHANNEL INTERRUPTED", "Tap once more to retry the briefing.");
+        intro.classList.add("needs-voice");
+      }
     };
 
     window.speechSynthesis.speak(speechUtterance);
+
+    schedule(() => {
+      if (dismissed || voiceStarted || voiceFinished) return;
+      if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+      if (userInitiated && voiceAttempt < 3) {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(speechUtterance);
+      }
+    }, 320);
+
+    schedule(() => {
+      if (!voiceStarted && !voiceFinished) requestVoiceAttention();
+    }, userInitiated ? 1500 : 900);
+
     return true;
   }
 
@@ -175,22 +223,25 @@
     prefersReducedMotion ? 240 : 2850,
   );
   schedule(
-    () => setBootStatus("ALL SYSTEMS NOMINAL", "Preparing today’s workspace…"),
+    () => {
+      if (!voiceStarted) {
+        setBootStatus("VOICE CHANNEL STANDBY", "Awaiting English AI greeting…");
+      }
+    },
     prefersReducedMotion ? 360 : 4800,
   );
 
   schedule(() => {
     speakGreeting();
-    schedule(() => {
-      if (!voiceStarted) voiceLabel.textContent = "Enable voice";
-    }, 700);
   }, prefersReducedMotion ? 80 : 1650);
 
-  schedule(() => dismissIntro(), prefersReducedMotion ? 1000 : 7000);
+  schedule(() => {
+    if (!voiceStarted && !voiceFinished) requestVoiceAttention();
+  }, prefersReducedMotion ? 700 : 6200);
 
   voiceButton.addEventListener("click", (event) => {
     event.stopPropagation();
-    speakGreeting({ withChime: true });
+    speakGreeting({ withChime: true, userInitiated: true });
   });
 
   skipButton.addEventListener("click", (event) => {
@@ -202,7 +253,7 @@
     "pointerdown",
     (event) => {
       if (event.target.closest("button")) return;
-      if (!voiceStarted) speakGreeting({ withChime: true });
+      if (!voiceStarted) speakGreeting({ withChime: true, userInitiated: true });
     },
     { once: true },
   );
