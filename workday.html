@@ -11,8 +11,94 @@
     <title>Yueren Workday Launch</title>
     <link rel="icon" href="favicon.svg?v=workday-favicon-1" type="image/svg+xml" />
     <link rel="stylesheet" href="workday.css?v=desktop-fit-27-tall" />
+    <link rel="stylesheet" href="yr-intro.css?v=yr-ai-welcome-1" />
   </head>
   <body data-timer-title="Yueren Workday Launch">
+    <section
+      class="yr-intro"
+      id="yr-intro"
+      role="dialog"
+      aria-modal="true"
+      aria-label="YR AI welcome sequence"
+    >
+      <div class="yr-intro__grid" aria-hidden="true"></div>
+      <div class="yr-intro__scanline" aria-hidden="true"></div>
+      <span class="yr-intro__corner yr-intro__corner--tl" aria-hidden="true"></span>
+      <span class="yr-intro__corner yr-intro__corner--tr" aria-hidden="true"></span>
+      <span class="yr-intro__corner yr-intro__corner--bl" aria-hidden="true"></span>
+      <span class="yr-intro__corner yr-intro__corner--br" aria-hidden="true"></span>
+
+      <div class="yr-intro__interface">
+        <header class="yr-intro__header">
+          <div>
+            <span class="yr-intro__signal" aria-hidden="true"></span>
+            <span>YR PERSONAL OPERATING SYSTEM</span>
+          </div>
+          <time id="yr-intro-time">--:--:--</time>
+        </header>
+
+        <div class="yr-intro__stage">
+          <aside class="yr-intro__telemetry yr-intro__telemetry--left" aria-hidden="true">
+            <p>IDENTITY MATRIX</p>
+            <div><span>BIOMETRIC MATCH</span><strong>100%</strong></div>
+            <i style="--level: 100%"></i>
+            <div><span>SECURE LINK</span><strong>ACTIVE</strong></div>
+            <i style="--level: 86%"></i>
+            <div><span>ENVIRONMENT</span><strong>NOMINAL</strong></div>
+            <i style="--level: 94%"></i>
+          </aside>
+
+          <div class="yr-intro__core-zone">
+            <div class="yr-intro__core" aria-hidden="true">
+              <span class="yr-intro__ring yr-intro__ring--outer"></span>
+              <span class="yr-intro__ring yr-intro__ring--mid"></span>
+              <span class="yr-intro__ring yr-intro__ring--inner"></span>
+              <span class="yr-intro__axis yr-intro__axis--x"></span>
+              <span class="yr-intro__axis yr-intro__axis--y"></span>
+              <span class="yr-intro__orb">
+                <b>YR</b>
+                <small>ONLINE</small>
+              </span>
+            </div>
+
+            <div class="yr-intro__copy">
+              <p class="yr-intro__overline">IDENTITY CONFIRMED · WELCOME PROTOCOL</p>
+              <h1>YR, it’s great to see you.</h1>
+              <p>I hope everything goes smoothly for you today.</p>
+            </div>
+          </div>
+
+          <aside class="yr-intro__telemetry yr-intro__telemetry--right" aria-hidden="true">
+            <p>SYSTEM READINESS</p>
+            <div><span>FOCUS CORE</span><strong>READY</strong></div>
+            <i style="--level: 92%"></i>
+            <div><span>LIVE COMMAND</span><strong>SYNCED</strong></div>
+            <i style="--level: 88%"></i>
+            <div><span>AI COPILOT</span><strong>STANDBY</strong></div>
+            <i style="--level: 96%"></i>
+          </aside>
+        </div>
+
+        <footer class="yr-intro__footer">
+          <div class="yr-intro__boot">
+            <div>
+              <span id="yr-intro-status">INITIALIZING PERSONAL INTERFACE</span>
+              <small id="yr-intro-status-detail">Establishing secure neural link…</small>
+            </div>
+            <span class="yr-intro__progress" aria-hidden="true"><i></i></span>
+          </div>
+
+          <div class="yr-intro__controls">
+            <button class="yr-intro__voice" id="yr-intro-voice" type="button">
+              <span aria-hidden="true">◉</span>
+              <b>Enable voice</b>
+            </button>
+            <button class="yr-intro__skip" id="yr-intro-skip" type="button">Skip intro</button>
+          </div>
+        </footer>
+      </div>
+    </section>
+
     <div class="ambient ambient-sun" aria-hidden="true"></div>
     <div class="ambient ambient-sky" aria-hidden="true"></div>
     <div class="page-grid" aria-hidden="true"></div>
@@ -220,6 +306,7 @@
       </footer>
     </main>
 
+    <script src="yr-intro.js?v=yr-ai-welcome-1"></script>
     <script src="workday.js?v=morning-studio-1"></script>
     <script src="app.js?v=integrated-home-1"></script>
   </body>
