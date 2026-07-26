@@ -108,12 +108,11 @@
   function requestVoiceAttention() {
     if (dismissed || voiceStarted) return;
     intro.classList.add("needs-voice");
-    voiceLabel.textContent = "Initialize voice";
+    voiceLabel.textContent = "Play voice";
     setBootStatus(
-      "VOICE AUTHORIZATION REQUIRED",
-      "Tap Initialize voice to hear your English AI briefing.",
+      "VOICE CHANNEL OPTIONAL",
+      "English briefing available. Entering workspace automatically…",
     );
-    voiceButton.focus({ preventScroll: true });
   }
 
   function speakGreeting({ withChime = false, userInitiated = false } = {}) {
@@ -160,7 +159,6 @@
       voiceButton.classList.remove("is-speaking");
       voiceLabel.textContent = "Replay voice";
       setBootStatus("ALL SYSTEMS NOMINAL", "Welcome complete. Opening your workspace…");
-      schedule(() => dismissIntro(), prefersReducedMotion ? 250 : 950);
     };
 
     speechUtterance.onerror = () => {
@@ -238,6 +236,11 @@
   schedule(() => {
     if (!voiceStarted && !voiceFinished) requestVoiceAttention();
   }, prefersReducedMotion ? 700 : 6200);
+
+  schedule(
+    () => dismissIntro({ cancelSpeech: true }),
+    prefersReducedMotion ? 1100 : 7000,
+  );
 
   voiceButton.addEventListener("click", (event) => {
     event.stopPropagation();
