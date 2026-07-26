@@ -448,59 +448,6 @@ h1 {
   line-height: 1.72;
 }
 
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-top: 38px;
-}
-
-.primary-button {
-  display: inline-flex;
-  min-height: 56px;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  border: 1px solid rgba(255, 209, 134, 0.24);
-  border-radius: 17px;
-  padding: 0 21px 0 24px;
-  color: #17120e;
-  background: linear-gradient(135deg, #ffd38b, #ff975c);
-  box-shadow:
-    0 16px 42px rgba(255, 127, 68, 0.2),
-    inset 0 1px rgba(255, 255, 255, 0.45);
-  font-size: 14px;
-  font-weight: 850;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.primary-button:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 20px 50px rgba(255, 127, 68, 0.28),
-    inset 0 1px rgba(255, 255, 255, 0.5);
-}
-
-.primary-button svg {
-  width: 19px;
-  height: 19px;
-}
-
-.primary-button path {
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.session-note {
-  color: #748096;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
 .morning-card {
   position: relative;
   overflow: hidden;
@@ -1089,15 +1036,6 @@ a:focus-visible {
     line-height: 1.5;
   }
 
-  .hero-actions {
-    margin-top: 20px;
-  }
-
-  .primary-button {
-    min-height: 46px;
-    border-radius: 14px;
-  }
-
   .morning-card {
     min-height: 300px;
     border-radius: 26px;
@@ -1235,15 +1173,6 @@ a:focus-visible {
     max-width: 620px;
     font-size: 18px;
     line-height: 1.65;
-  }
-
-  .hero-actions {
-    margin-top: 30px;
-  }
-
-  .primary-button {
-    min-height: 52px;
-    border-radius: 16px;
   }
 
   .morning-card {
@@ -1539,17 +1468,6 @@ a:focus-visible {
   .hero-subtitle {
     font-size: 16px;
     line-height: 1.65;
-  }
-
-  .hero-actions {
-    align-items: flex-start;
-    margin-top: 30px;
-    flex-direction: column;
-    gap: 11px;
-  }
-
-  .session-note {
-    padding-left: 3px;
   }
 
   .morning-card {
