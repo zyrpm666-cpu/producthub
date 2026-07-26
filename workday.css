@@ -1158,10 +1158,10 @@ a:focus-visible {
   }
 
   .hero {
-    flex-basis: 480px;
-    grid-template-columns: minmax(0, 1fr) 420px;
+    flex-basis: 600px;
+    grid-template-columns: minmax(0, 1fr) 460px;
     gap: clamp(96px, 7vw, 150px);
-    padding: 36px 0 28px;
+    padding: 52px 0 42px;
   }
 
   h1 {
@@ -1176,28 +1176,28 @@ a:focus-visible {
   }
 
   .morning-card {
-    min-height: 420px;
-    border-radius: 30px;
-    padding: 26px;
+    min-height: 500px;
+    border-radius: 32px;
+    padding: 30px;
   }
 
   .energy-orbit {
-    width: 164px;
-    height: 164px;
-    margin: 18px auto 7px;
+    width: 188px;
+    height: 188px;
+    margin: 24px auto 10px;
   }
 
   .orbit-two {
-    inset: 17px;
+    inset: 18px;
   }
 
   .halo {
-    width: 96px;
-    height: 96px;
+    width: 108px;
+    height: 108px;
   }
 
   .energy-score {
-    font-size: 64px;
+    font-size: 70px;
   }
 
   .energy-score small {
@@ -1205,7 +1205,7 @@ a:focus-visible {
   }
 
   .energy-meter {
-    margin: 15px 0;
+    margin: 18px 0;
   }
 
   .card-note {
