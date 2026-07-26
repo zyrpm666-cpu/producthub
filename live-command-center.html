@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08080a">
+<title>LIVE PULSE · 直播总控台</title>
+<script src="https://registry.npmmirror.com/echarts/5.5.0/files/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg:#08080a; --surface:#141417; --surface2:#1b1b20;
+    --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+    --ink:#f5f5f7; --muted:#8b8b95;
+    --cyan:#25f4ee; --pink:#fe2c55; --green:#72ef9c; --yellow:#ffcb45;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-width:320px; min-height:100%; background:var(--bg); }
+  body {
+    color:var(--ink);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(circle at 8% -8%,rgba(37,244,238,.13),transparent 25rem),
+      radial-gradient(circle at 96% 4%,rgba(254,44,85,.14),transparent 28rem),
+      linear-gradient(180deg,#0b0b0e 0,#08080a 40%,#070708 100%);
+  }
+  body::before {
+    position:fixed; inset:0; z-index:0; pointer-events:none; content:"";
+    background-image:radial-gradient(rgba(255,255,255,.12) .75px,transparent .75px);
+    background-size:22px 22px; opacity:.15;
+    -webkit-mask-image:linear-gradient(#000,transparent 75%); mask-image:linear-gradient(#000,transparent 75%);
+  }
+  button { font:inherit; }
+  #wrap { position:relative; z-index:1; width:min(calc(100% - 36px),1440px); margin:auto; padding:20px 0 24px; }
+
+  .topbar {
+    position:relative; display:flex; align-items:center; justify-content:space-between; gap:20px;
+    min-height:76px; overflow:hidden; padding:14px 16px;
+    border:1px solid var(--line); border-radius:22px;
+    background:rgba(18,18,22,.88); box-shadow:0 18px 60px rgba(0,0,0,.32);
+    -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);
+  }
+  .topbar::before,.topbar::after {
+    position:absolute; width:140px; height:140px; border-radius:50%; content:""; filter:blur(58px); opacity:.18;
+  }
+  .topbar::before { top:-110px; left:12%; background:var(--cyan); }
+  .topbar::after { right:13%; bottom:-116px; background:var(--pink); }
+  .brand,.actions,.live-pill { position:relative; z-index:1; display:flex; align-items:center; }
+  .brand { gap:13px; min-width:0; }
+  .mark {
+    position:relative; display:grid; width:46px; height:46px; flex:0 0 46px; place-items:center;
+    border:1px solid var(--line2); border-radius:15px; background:#09090b;
+    box-shadow:-3px 0 var(--cyan),3px 0 var(--pink);
+  }
+  .mark::before,.mark::after,.mark i { position:absolute; border-radius:999px; content:""; }
+  .mark::before { width:8px; height:25px; background:#fff; transform:rotate(-20deg); }
+  .mark::after { bottom:9px; left:11px; width:14px; height:14px; border:4px solid #fff; background:#09090b; }
+  .mark i { top:10px; right:10px; width:14px; height:5px; background:#fff; transform:rotate(18deg); }
+  .eyebrow,.kicker { margin:0; color:var(--cyan); font-size:9px; font-weight:900; letter-spacing:.18em; }
+  h1 { margin:4px 0 0; font-size:19px; line-height:1.1; letter-spacing:.02em; }
+  .actions { gap:10px; }
+  .live-pill {
+    gap:7px; padding:8px 11px; border-radius:999px; color:#fff; background:var(--pink);
+    font-size:10px; font-weight:900; letter-spacing:.08em; box-shadow:4px 4px 0 rgba(37,244,238,.14);
+  }
+  .live-pill i,.status i {
+    width:6px; height:6px; border-radius:50%; background:#fff;
+    box-shadow:0 0 0 4px rgba(255,255,255,.16); animation:pulse 1.5s ease-in-out infinite;
+  }
+  #clock { min-width:76px; font-size:15px; font-weight:850; font-variant-numeric:tabular-nums; letter-spacing:.04em; text-align:right; }
+
+  .hero { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding:38px 4px 20px; }
+  .hero h2 { margin:8px 0 0; font-size:clamp(29px,4vw,48px); line-height:1.04; letter-spacing:-.055em; }
+  .hero h2::after {
+    display:inline-block; width:12px; height:12px; margin-left:12px; border-radius:50%;
+    content:""; background:var(--pink); box-shadow:4px 0 var(--cyan);
+  }
+  .updated { margin:0 0 4px; color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
+
+  .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
+  .kpi,.panel {
+    border:1px solid var(--line);
+    background:linear-gradient(155deg,rgba(255,255,255,.035),transparent 42%),var(--surface);
+    box-shadow:0 14px 42px rgba(0,0,0,.23);
+  }
+  .kpi {
+    position:relative; min-height:144px; overflow:hidden; padding:18px; border-radius:20px;
+    transition:transform .18s ease,border-color .18s ease;
+  }
+  .kpi:hover { border-color:rgba(255,255,255,.2); transform:translateY(-2px); }
+  .kpi::before {
+    position:absolute; top:0; right:0; width:76px; height:76px; border-radius:0 20px 0 76px;
+    content:""; background:var(--acc); opacity:.08;
+  }
+  .kpi::after {
+    position:absolute; right:18px; bottom:18px; width:7px; height:7px; border-radius:50%;
+    content:""; background:var(--acc); box-shadow:3px 0 rgba(255,255,255,.85);
+  }
+  .k-label { display:flex; align-items:center; justify-content:space-between; color:#a4a4ad; font-size:12px; font-weight:650; }
+  .k-label::after {
+    width:34px; height:2px; border-radius:99px; content:"";
+    background:linear-gradient(90deg,transparent,var(--acc)); transform:skewY(-22deg);
+  }
+  .k-value { margin:13px 0 10px; font-size:32px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:-.055em; }
+  .unit { margin-left:5px; color:#777780; font-size:10px; font-weight:700; letter-spacing:0; }
+  .k-delta { display:flex; gap:10px; font-size:10px; }
+  .up { color:var(--green); } .down { color:#ff6b87; }
+
+  .main-grid {
+    display:grid; grid-template-columns:minmax(0,1.55fr) minmax(300px,.82fr) minmax(290px,.72fr);
+    grid-template-areas:"trend rank dist" "trend rank alerts"; gap:12px;
+  }
+  .panel { min-width:0; padding:18px; border-radius:22px; }
+  .p-trend { position:relative; grid-area:trend; overflow:hidden; }
+  .p-rank { grid-area:rank; }
+  .p-dist { grid-area:dist; }
+  .p-alert { grid-area:alerts; }
+  .p-trend::after {
+    position:absolute; right:-70px; bottom:-80px; width:220px; height:220px; border-radius:50%;
+    pointer-events:none; content:""; background:rgba(37,244,238,.055); filter:blur(25px);
+  }
+  .panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin-bottom:11px; }
+  .panel-head h3 { margin:6px 0 0; font-size:15px; letter-spacing:.01em; }
+  .chip { padding:5px 9px; border:1px solid var(--line); border-radius:999px; color:#93939c; background:rgba(255,255,255,.035); font-size:9px; }
+  .legend { display:flex; gap:12px; color:#85858e; font-size:9px; }
+  .legend span::before {
+    display:inline-block; width:7px; height:7px; margin-right:5px; border-radius:50%;
+    content:""; background:var(--cyan); box-shadow:2px 0 rgba(254,44,85,.55);
+  }
+  .legend span:last-child::before { background:var(--pink); box-shadow:2px 0 rgba(37,244,238,.55); }
+  .chart { position:relative; z-index:1; width:100%; }
+  #trend,#rank { height:440px; }
+  #dist { height:145px; }
+
+  .alert-list { max-height:226px; overflow:auto; padding-right:2px; }
+  .alert-list::-webkit-scrollbar { width:4px; }
+  .alert-list::-webkit-scrollbar-thumb { border-radius:99px; background:rgba(255,255,255,.14); }
+  .alert-item {
+    display:grid; grid-template-columns:auto 1fr; gap:9px; margin-bottom:7px; padding:10px;
+    border:1px solid rgba(255,255,255,.06); border-radius:13px; background:rgba(255,255,255,.025);
+  }
+  .sev {
+    display:inline-grid; min-width:24px; height:20px; place-items:center; border-radius:7px;
+    font-size:9px; font-weight:900;
+  }
+  .sev-high { border:1px solid rgba(254,44,85,.45); color:#ff6683; background:rgba(254,44,85,.12); }
+  .sev-mid { border:1px solid rgba(255,203,69,.45); color:var(--yellow); background:rgba(255,203,69,.1); }
+  .sev-low { border:1px solid rgba(37,244,238,.4); color:var(--cyan); background:rgba(37,244,238,.09); }
+  .a-body { min-width:0; }
+  .a-title { color:#e8e8eb; font-size:10px; font-weight:750; line-height:1.4; }
+  .a-meta { display:flex; justify-content:space-between; gap:8px; margin-top:4px; color:#75757e; font-size:8px; }
+  .a-type { color:#a2a2aa; }
+  #st { min-height:18px; padding:10px 4px 0; color:#666670; font-size:10px; text-align:center; }
+  .footer {
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:6px 4px 0; color:#565660; font-size:9px; letter-spacing:.04em;
+  }
+  .status { display:flex; align-items:center; gap:7px; }
+  .status i { display:block; width:5px; height:5px; background:var(--pink); box-shadow:2px 0 var(--cyan); }
+
+  @keyframes pulse { 50% { opacity:.34; transform:scale(.78); } }
+  @media (max-width:1080px) {
+    .main-grid { grid-template-columns:1fr 1fr; grid-template-areas:"trend trend" "rank dist" "rank alerts"; }
+    #trend { height:330px; }
+  }
+  @media (max-width:720px) {
+    #wrap { width:min(calc(100% - 22px),620px); padding-top:11px; }
+    .topbar { align-items:flex-start; min-height:66px; padding:12px; border-radius:18px; }
+    .mark { width:40px; height:40px; flex-basis:40px; border-radius:13px; }
+    .mark::before { height:21px; }
+    .mark::after { bottom:8px; left:9px; width:12px; height:12px; }
+    h1 { font-size:16px; }
+    .live-pill { display:none; }
+    #clock { min-width:68px; font-size:13px; }
+    .hero { align-items:flex-start; flex-direction:column; gap:11px; padding:31px 3px 17px; }
+    .hero h2 { font-size:clamp(27px,9vw,38px); }
+    .hero h2::after { width:9px; height:9px; margin-left:9px; }
+    .updated { margin:0; }
+    .kpi-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    .kpi { min-height:128px; padding:14px; border-radius:17px; }
+    .k-value { font-size:clamp(23px,7vw,28px); }
+    .main-grid { grid-template-columns:minmax(0,1fr); grid-template-areas:"trend" "rank" "dist" "alerts"; gap:10px; }
+    .panel { padding:14px; border-radius:18px; }
+    #trend { height:265px; }
+    #rank { height:360px; }
+    #dist { height:250px; }
+    .alert-list { max-height:none; }
+    .footer { align-items:flex-start; flex-direction:column; }
+  }
+  @media (max-width:390px) {
+    #wrap { width:min(calc(100% - 18px),372px); }
+    .topbar { padding:11px; }
+    .eyebrow { display:none; }
+    .brand { gap:9px; }
+    .hero h2 { font-size:27px; }
+    .kpi { min-height:121px; }
+    .k-label { font-size:10px; }
+    .k-label::after { width:24px; }
+  }
+  .section-block{padding-top:44px;scroll-margin-top:90px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:0 4px 17px}
+  .section-head h2{margin:8px 0 0;font-size:clamp(25px,3vw,36px);letter-spacing:-.05em}
+  .section-head>p{margin:0 0 3px;color:#777780;font-size:10px}
+  .segment-grid{display:grid;grid-template-columns:1.1fr 1fr .9fr;gap:12px}
+  .tier-list{display:grid;gap:8px}
+  .tier-item{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px;border-radius:13px;background:rgba(255,255,255,.025)}
+  .tier-dot{width:9px;height:9px;border-radius:50%}
+  .tier-item p,.tier-item b{margin:0}
+  .tier-item p{display:grid;gap:3px}.tier-item p strong{font-size:11px}
+  .tier-item small{color:#707078;font-size:8px}.tier-item b{display:grid;gap:3px;text-align:right;font-size:13px}
+  .type-cloud{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.type-cloud.two-types{grid-template-columns:repeat(2,1fr)}
+  .type-item{display:grid;min-height:91px;place-items:center;align-content:center;border:1px solid rgba(255,255,255,.06);border-radius:16px;background:rgba(255,255,255,.025)}
+  .type-item strong{font-size:20px}.type-item span{margin-top:6px;color:#8c8c95;font-size:9px}
+  .type-item:nth-child(3n+1) strong{color:var(--pink)}.type-item:nth-child(3n+2) strong{color:var(--cyan)}.type-item:nth-child(3n) strong{color:#9b7cff}
+  .ownership-bars{display:grid;gap:16px}.ownership-bars p{display:flex;justify-content:space-between;margin:0 0 7px;color:#a5a5ad;font-size:10px}
+  .ownership-bars p strong{color:#f1f1f3}.ownership-bars p em{margin-left:5px;color:var(--cyan);font-size:9px;font-style:normal;font-weight:900}.ownership-bars i{display:block;overflow:hidden;height:6px;border-radius:99px;background:rgba(255,255,255,.055)}
+  .ownership-bars b{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+  .ownership-total{margin-top:24px;padding:15px;border-radius:15px;background:#0d0d10}.ownership-total strong{display:block;font-size:25px}.ownership-total span{color:#74747d;font-size:9px}
+  .ranking-head{align-items:center}.scope-switch{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:#101013}
+  .scope-switch button{border:0;border-radius:999px;padding:8px 13px;color:#85858d;background:transparent;font-size:10px;cursor:pointer}
+  .scope-switch button.active{color:#08080a;background:var(--cyan);font-weight:900;box-shadow:3px 0 var(--pink)}
+  .ranking-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:12px}
+  .ranking-list{display:grid;gap:7px}
+  .rank-row{display:grid;grid-template-columns:30px 34px 1fr auto;align-items:center;gap:10px;padding:9px;border:1px solid rgba(255,255,255,.055);border-radius:14px;background:rgba(255,255,255,.022)}
+  button.rank-row{grid-template-columns:30px 1fr auto 12px;width:100%;color:inherit;text-align:left;cursor:pointer}
+  button.rank-row:hover{border-color:rgba(37,244,238,.25);background:rgba(37,244,238,.035)}
+  .rank-index{display:grid;width:28px;height:28px;place-items:center;border-radius:9px;color:#777780;background:#0c0c0f;font-size:9px;font-weight:900}
+  .rank-row:first-child .rank-index{color:#08080a;background:var(--yellow);box-shadow:3px 3px rgba(254,44,85,.5)}
+  .mini-avatar{display:grid;width:34px;height:34px;place-items:center;border-radius:50%;color:#08080a;background:linear-gradient(135deg,var(--cyan),#fff 48%,var(--pink));font-size:12px;font-weight:900}
+  .rank-row p{display:grid;gap:3px;min-width:0;margin:0}.rank-row p strong{overflow:hidden;font-size:10px;text-overflow:ellipsis;white-space:nowrap}.rank-row p small{color:#74747d;font-size:8px}
+  .rank-row>b{font-size:10px;white-space:nowrap}.rank-row>em{color:var(--cyan);font-size:18px;font-style:normal}
+  .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .room-card{overflow:hidden;border:1px solid var(--line);border-radius:22px;padding:0;color:inherit;background:var(--surface);text-align:left;box-shadow:0 14px 42px rgba(0,0,0,.22);cursor:pointer;transition:.18s}
+  .room-card:hover{border-color:rgba(37,244,238,.28);transform:translateY(-3px)}
+  .room-cover{position:relative;display:grid;height:152px;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.22) 0 9%,transparent 10%),radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.16) 0 22%,transparent 23%),linear-gradient(135deg,#2b3041,#5c2860 55%,#1b6461)}
+  .room-cover.cover-1{background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.22) 0 9%,transparent 10%),radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.16) 0 22%,transparent 23%),linear-gradient(135deg,#372a62,#78314d,#235f67)}
+  .room-cover.cover-2{background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.22) 0 9%,transparent 10%),radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.16) 0 22%,transparent 23%),linear-gradient(135deg,#24354d,#6d303d,#594b22)}
+  .room-cover.cover-3{background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.22) 0 9%,transparent 10%),radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.16) 0 22%,transparent 23%),linear-gradient(135deg,#185555,#59375e,#7b273d)}
+  .room-cover.cover-4{background:linear-gradient(135deg,#56504b,#8a785a,#303942)}
+  .room-cover:after{position:absolute;inset:0;content:"";background:linear-gradient(transparent 40%,rgba(0,0,0,.55))}
+  .room-status,.risk-badge{position:absolute;z-index:2;top:11px;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:900}
+  .room-status{left:11px;background:var(--pink);box-shadow:3px 3px rgba(37,244,238,.18)}.room-status.ended{color:#c5c5cb;background:rgba(18,18,21,.72);box-shadow:none}
+  .risk-badge{right:11px;border:1px solid rgba(255,255,255,.15);background:rgba(10,10,12,.65)}.risk-normal{color:var(--green)}.risk-watch{color:var(--yellow)}.risk-alert{color:#ff6683}
+  .cover-avatar{position:relative;z-index:1;color:#fff;font-size:44px;font-weight:900;text-shadow:-3px 0 rgba(37,244,238,.55),3px 0 rgba(254,44,85,.55)}
+  .room-copy{padding:15px}.room-copy h3{overflow:hidden;margin:0;font-size:13px;text-overflow:ellipsis;white-space:nowrap}.room-copy>p{margin:6px 0 14px;color:#777780;font-size:9px}
+  .room-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.room-stats span{display:grid;gap:3px;padding:8px;border-radius:10px;background:rgba(255,255,255,.03)}
+  .room-stats small{color:#707078;font-size:7px}.room-stats strong{overflow:hidden;font-size:10px;text-overflow:ellipsis}.room-action{display:flex;justify-content:space-between;margin-top:13px;font-size:9px}.room-action b{color:var(--cyan)}
+  .drawer-backdrop{position:fixed;inset:0;z-index:100;display:none;justify-content:flex-end;background:rgba(0,0,0,.7);backdrop-filter:blur(8px)}
+  .drawer-backdrop.open{display:flex}.room-drawer{width:min(100%,920px);height:100%;overflow-y:auto;padding:22px;border-left:1px solid var(--line2);background:#0c0c0f;box-shadow:-28px 0 80px rgba(0,0,0,.45)}
+  body.detail-mode{background:#08080a}body.detail-mode #wrap{display:none}
+  body.detail-mode .drawer-backdrop.open{position:relative;display:flex;min-height:100vh;background:radial-gradient(circle at 6% 0,rgba(37,244,238,.1),transparent 26rem),radial-gradient(circle at 96% 4%,rgba(254,44,85,.12),transparent 28rem),#08080a;backdrop-filter:none}
+  body.detail-mode .room-drawer{width:min(calc(100% - 36px),1440px);height:auto;min-height:100vh;margin:auto;overflow:visible;border:0;padding:20px 0;background:transparent;box-shadow:none}
+  body.detail-mode .drawer-top{top:10px;margin:0 0 16px;padding:13px 16px;border:1px solid var(--line);border-radius:20px;background:rgba(17,17,20,.92)}
+  .drawer-top{position:sticky;top:-22px;z-index:5;display:flex;align-items:center;justify-content:space-between;margin:-22px -22px 18px;padding:20px 22px 14px;background:rgba(12,12,15,.92);backdrop-filter:blur(20px)}
+  .drawer-top h2{margin:5px 0 0;font-size:22px}.drawer-actions,.sync-badge{display:flex;align-items:center}.drawer-actions{gap:10px}.sync-badge{gap:7px;padding:8px 11px;border:1px solid rgba(114,239,156,.22);border-radius:999px;color:var(--green);background:rgba(114,239,156,.06);font-size:9px;font-weight:900}.sync-badge i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(114,239,156,.12);animation:pulse 1.2s infinite}.close-btn{display:grid;width:38px;height:38px;place-items:center;border:1px solid var(--line);border-radius:50%;color:#fff;background:rgba(255,255,255,.045);font-size:24px;cursor:pointer}
+  .room-hero{display:grid;grid-template-columns:minmax(280px,.82fr) minmax(360px,1.18fr);gap:12px}
+  .video-stage{position:relative;min-height:430px;overflow:hidden;border:1px solid var(--line);border-radius:22px;background:radial-gradient(circle at 54% 35%,rgba(255,255,255,.3) 0 6%,transparent 7%),radial-gradient(ellipse at 52% 85%,rgba(255,255,255,.13) 0 23%,transparent 24%),linear-gradient(150deg,#242c35,#725745 45%,#2d6463)}
+  .video-stage:after{position:absolute;inset:0;content:"";background:linear-gradient(rgba(0,0,0,.1),transparent 44%,rgba(0,0,0,.78))}
+  .ai-badge{position:absolute;z-index:2;top:14px;right:14px;padding:7px 9px;border-radius:10px;background:#8f5af5;font-size:9px;font-weight:900}
+  .stage-copy{position:absolute;z-index:2;top:52px;left:14px;display:grid;gap:4px;max-width:70%;padding:10px;border-radius:12px;background:rgba(0,0,0,.5)}.stage-copy strong{font-size:11px}.stage-copy span{font-size:8px}
+  .play-btn{position:absolute;z-index:2;top:50%;left:50%;display:grid;width:76px;height:76px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:rgba(0,0,0,.54);transform:translate(-50%,-50%)}
+  .play-btn i{width:0;height:0;margin-left:6px;border-top:13px solid transparent;border-bottom:13px solid transparent;border-left:20px solid #fff}
+  .identity-card,.detail-section{border:1px solid var(--line);border-radius:22px;background:var(--surface)}.identity-card{padding:18px}
+  .identity-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .identity-head h3{margin:0;font-size:17px}.identity-head p{margin:4px 0 0;color:#73737d;font-size:9px}.detail-avatar{display:grid;width:46px;height:46px;place-items:center;border-radius:50%;color:#08080a;background:linear-gradient(135deg,var(--cyan),#fff 48%,var(--pink));font-weight:900}
+  .level-badge{display:grid;width:30px;height:30px;place-items:center;border-radius:9px;color:#09090b;background:var(--yellow);font-weight:900;box-shadow:3px 3px rgba(254,44,85,.5)}
+  .identity-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 0;border-bottom:1px solid var(--line)}.identity-stats span{display:grid;gap:4px;color:#74747d;font-size:8px;text-align:center}.identity-stats strong{color:#f2f2f4;font-size:14px}
+  .profile-list{display:grid;grid-template-columns:1fr 1fr;gap:13px 18px;margin:17px 0 0}.profile-list dt{margin-bottom:4px;color:#6e6e77;font-size:8px}.profile-list dd{overflow:hidden;margin:0;color:#d7d7dc;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+  .detail-section{margin-top:12px;padding:18px}.detail-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.detail-head h3{margin:6px 0 0;font-size:15px}
+  .metric-matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric-matrix article{position:relative;display:grid;min-height:92px;align-content:center;padding:12px;border:1px solid rgba(255,255,255,.055);border-radius:14px;background:rgba(255,255,255,.022)}
+  .metric-matrix span{color:#777780;font-size:8px}.metric-matrix strong{margin-top:7px;font-size:18px}.metric-matrix small{position:absolute;right:10px;bottom:10px;color:var(--green);font-size:7px}
+  #detailTrend{width:100%;height:360px}.multi-legend{display:flex;flex-wrap:wrap;gap:8px 15px;margin-bottom:8px;color:#8b8b94;font-size:9px}.multi-legend span:before{display:inline-block;width:16px;height:3px;margin-right:6px;border-radius:99px;content:"";vertical-align:middle}.line-traffic:before{background:#25f4ee}.line-watch:before{background:#49a8ff}.line-like:before{background:#9b7cff}.line-follow:before{background:#ffcb45}.line-gift:before{background:#fe2c55}.line-revenue:before{background:#72ef9c}
+  .correlation-note{display:grid;grid-template-columns:auto 1fr;gap:12px;margin-top:8px;padding:12px;border:1px solid rgba(37,244,238,.15);border-radius:14px;background:rgba(37,244,238,.04)}.correlation-note strong{color:var(--cyan);font-size:9px}.correlation-note p{margin:0;color:#a0a0a8;font-size:9px;line-height:1.55}
+  body.detail-mode .metric-matrix{grid-template-columns:repeat(6,1fr)}
+  .event-line{display:grid;grid-template-columns:46px 70px 1fr;align-items:center;gap:10px;margin-top:8px;padding:10px;border-radius:12px;background:rgba(255,255,255,.025);font-size:9px}.event-line time{color:#777780}.event-line p{margin:0;color:#a0a0a8}.event-cyan{color:var(--cyan)}.event-pink{color:#ff6683}.event-yellow{color:var(--yellow)}
+  @media(max-width:1100px){.segment-grid{grid-template-columns:1fr 1fr}.ownership-panel{grid-column:auto}.room-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:720px){.section-head{align-items:flex-start;flex-direction:column;gap:10px}.segment-grid,.ranking-grid{grid-template-columns:1fr}.ranking-head{align-items:flex-start}.scope-switch{width:100%;overflow:auto}.scope-switch button{flex:1 0 auto}.room-grid{grid-template-columns:1fr}.room-cover{height:175px}.room-hero{grid-template-columns:1fr}.video-stage{min-height:430px}.metric-matrix,body.detail-mode .metric-matrix{grid-template-columns:repeat(2,1fr)}.room-drawer{padding:14px}.drawer-top{top:-14px;margin:-14px -14px 12px;padding:15px 14px 12px}body.detail-mode .room-drawer{width:calc(100% - 20px);padding-top:10px}.sync-badge{display:none}.correlation-note{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce) {
+    *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><i></i></span>
+      <div><p class="eyebrow">LIVE PULSE</p><h1>直播总控台</h1></div>
+    </div>
+    <div class="actions">
+      <span class="live-pill"><i></i>LIVE</span>
+      <time id="clock">--:--:--</time>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div><p class="kicker">GLOBAL BUSINESS · NOW</p><h2>从全局经营，到每一个直播间</h2></div>
+    <p class="updated" id="updated">数据持续刷新中</p>
+  </section>
+
+  <section class="kpi-row" id="kpiRow" aria-label="核心实时指标"></section>
+
+  <section class="main-grid">
+    <article class="panel p-trend">
+      <div class="panel-head">
+        <div><p class="kicker">01 · LAST 60 MINUTES</p><h3>观看与流水趋势</h3></div>
+        <div class="legend"><span>并发观看</span><span>实时流水</span></div>
+      </div>
+      <div id="trend" class="chart"></div>
+    </article>
+    <article class="panel p-rank">
+      <div class="panel-head">
+        <div><p class="kicker">02 · TOP GUILDS</p><h3>公会实时流水榜</h3></div>
+        <span class="chip">万钻</span>
+      </div>
+      <div id="rank" class="chart"></div>
+    </article>
+    <article class="panel p-dist">
+      <div class="panel-head">
+        <div><p class="kicker">03 · AUDIENCE MAP</p><h3>直播区域分布</h3></div>
+      </div>
+      <div id="dist" class="chart"></div>
+    </article>
+    <article class="panel p-alert">
+      <div class="panel-head">
+        <div><p class="kicker">04 · LIVE ALERTS</p><h3>实时告警事件</h3></div>
+        <span class="chip">8 条</span>
+      </div>
+      <div class="alert-list" id="alertList"></div>
+    </article>
+  </section>
+
+  <section class="section-block" id="segments">
+    <div class="section-head"><div><p class="kicker">ANCHOR SEGMENTATION</p><h2>主播经营分层</h2></div><p>按价值层级、主播类型与内容分类拆解</p></div>
+    <div class="segment-grid">
+      <article class="panel">
+        <div class="panel-head"><div><p class="kicker">VALUE TIER</p><h3>主播价值分层</h3></div></div>
+        <div class="tier-list">
+          <div class="tier-item"><i class="tier-dot" style="background:#fe2c55"></i><p><strong>S 级 · 头部</strong><small>286 位主播</small></p><b>62%<small>流水占比</small></b></div>
+          <div class="tier-item"><i class="tier-dot" style="background:#25f4ee"></i><p><strong>A 级 · 腰部</strong><small>1,842 位主播</small></p><b>24%<small>流水占比</small></b></div>
+          <div class="tier-item"><i class="tier-dot" style="background:#9b7cff"></i><p><strong>B 级 · 成长</strong><small>4,716 位主播</small></p><b>10%<small>流水占比</small></b></div>
+          <div class="tier-item"><i class="tier-dot" style="background:#ffcb45"></i><p><strong>C 级 · 新星</strong><small>6,016 位主播</small></p><b>4%<small>流水占比</small></b></div>
+        </div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><div><p class="kicker">CONTENT CATEGORY</p><h3>内容分类</h3></div></div>
+        <div class="type-cloud">
+          <div class="type-item"><strong>32%</strong><span>娱乐聊天</span></div><div class="type-item"><strong>24%</strong><span>PK 连麦</span></div>
+          <div class="type-item"><strong>18%</strong><span>才艺音乐</span></div><div class="type-item"><strong>12%</strong><span>舞蹈</span></div>
+          <div class="type-item"><strong>9%</strong><span>游戏</span></div><div class="type-item"><strong>5%</strong><span>其他</span></div>
+        </div>
+      </article>
+      <article class="panel ownership-panel">
+        <div class="panel-head"><div><p class="kicker">OWNERSHIP</p><h3>主播归属结构</h3></div></div>
+        <div class="ownership-bars">
+          <div><p><span>公会主播 <em>58%</em></span><strong>7,420</strong></p><i><b style="width:58%"></b></i></div>
+          <div><p><span>平台主播 <em>42%</em></span><strong>5,440</strong></p><i><b style="width:42%"></b></i></div>
+        </div>
+        <div class="ownership-total"><strong>12,860</strong><span>纳入实时经营监控的主播</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-block" id="rankings">
+    <div class="section-head ranking-head">
+      <div><p class="kicker">OPERATING RANKING</p><h2>主播与直播间排名</h2></div>
+      <div class="scope-switch" id="scopeSwitch"><button class="active" data-scope="guild">公会主播</button><button data-scope="platform">平台主播</button></div>
+    </div>
+    <div class="ranking-grid">
+      <article class="panel"><div class="panel-head"><div><p class="kicker" id="anchorScope">公会</p><h3>主播实时排名</h3></div><span class="chip">按流水</span></div><div class="ranking-list" id="anchorRanking"></div></article>
+      <article class="panel"><div class="panel-head"><div><p class="kicker" id="roomScope">公会</p><h3>直播间实时排名</h3></div><span class="chip">点击下钻</span></div><div class="ranking-list" id="roomRanking"></div></article>
+    </div>
+  </section>
+
+  <section class="section-block" id="rooms">
+    <div class="section-head"><div><p class="kicker">ROOM COMMAND CENTER</p><h2>重点直播间跟播</h2></div><p>点击直播间查看分钟级详情</p></div>
+    <div class="room-grid" id="roomGrid"></div>
+  </section>
+
+  <div id="st" role="status"></div>
+  <footer class="footer">
+    <span class="status"><i></i>数据持续刷新中</span>
+    <span>LIVE Operations · Entertainment Dashboard</span>
+  </footer>
+</div>
+
+<div class="drawer-backdrop" id="roomDrawer" aria-hidden="true">
+  <aside class="room-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer-top"><div><p class="kicker" id="drawerRoomId">LIVE ROOM</p><h2 id="drawerTitle">直播间全屏实时跟播</h2></div><div class="drawer-actions"><span class="sync-badge"><i></i>实时更新 · <time id="detailClock">--:--:--</time></span><button class="close-btn" id="closeDrawer" aria-label="关闭详情">×</button></div></div>
+    <section class="room-hero">
+      <div class="video-stage"><span class="ai-badge">✦ AI 内容分析</span><div class="stage-copy"><strong id="detailTitle">直播间标题</strong><span id="detailDuration">直播时长</span></div><button class="play-btn" aria-label="播放回放"><i></i></button></div>
+      <div class="identity-card">
+        <div class="identity-head"><span class="detail-avatar" id="detailAvatar">L</span><div><h3 id="detailAnchor">Luna_LIVE</h3><p id="detailHandle">@luna.live.us</p></div><span class="level-badge">S</span></div>
+        <div class="identity-stats"><span><strong>189万</strong>粉丝</span><span><strong>655</strong>关注</span><span><strong>2.9万</strong>点赞</span></div>
+        <dl class="profile-list">
+          <div><dt>所属公会</dt><dd id="detailGuild">星耀盟</dd></div><div><dt>主播类型</dt><dd id="detailCategory">娱乐 / PK</dd></div>
+          <div><dt>开播地区</dt><dd id="detailRegion">US</dd></div><div><dt>开播方式</dt><dd>手机开播</dd></div>
+          <div><dt>主播分层</dt><dd>S 级 · 重点跟播</dd></div><div><dt>风险状态</dt><dd id="detailRisk">正常</dd></div>
+        </dl>
+      </div>
+    </section>
+    <section class="detail-section"><div class="detail-head"><div><p class="kicker">PERFORMANCE</p><h3>本场直播表现</h3></div><span class="chip">分钟级实时刷新</span></div><div class="metric-matrix" id="metricMatrix"></div></section>
+    <section class="detail-section"><div class="detail-head"><div><p class="kicker">REAL-TIME CORRELATION · SAME TIMELINE</p><h3>六大指标分钟级联动趋势</h3></div><span class="chip">实时更新</span></div>
+      <div class="multi-legend"><span class="line-traffic">流量</span><span class="line-watch">看播</span><span class="line-like">点赞</span><span class="line-follow">关注</span><span class="line-gift">送礼</span><span class="line-revenue">营收</span></div>
+      <div id="detailTrend"></div>
+      <div class="correlation-note"><strong>AI 联动洞察</strong><p>00:43 流量提升后，看播 UV 在 3 分钟内增长 18%；点赞与关注同步抬升，送礼峰值滞后约 6 分钟出现，并带动营收进入本场最高区间。</p></div>
+    </section>
+    <section class="detail-section"><div class="detail-head"><div><p class="kicker">AI MOMENTS</p><h3>关键时刻与异常</h3></div></div>
+      <div class="event-line"><time>00:18</time><span class="event-cyan">流量加速</span><p>进入推荐流量池，观看人数 5 分钟增长 24%</p></div>
+      <div class="event-line"><time>00:43</time><span class="event-pink">礼物峰值</span><p>PK 环节触发本场最高送礼峰值 18.6 万钻/分钟</p></div>
+      <div class="event-line"><time>01:12</time><span class="event-yellow">内容关注</span><p>评论负向情绪短时升高，AI 建议运营介入观察</p></div>
+    </section>
+  </aside>
+</div>
+
+<script>
+(function boot(){
+  const statusEl=document.getElementById("st");
+  const setStatus=t=>{ statusEl.textContent=t||""; };
+  function clock(){
+    const d=new Date(),p=n=>String(n).padStart(2,"0");
+    document.getElementById("clock").textContent=p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+    document.getElementById("updated").textContent="数据刷新于 "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+    const detailClock=document.getElementById("detailClock");if(detailClock)detailClock.textContent=p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+  }
+  clock(); setInterval(clock,1000);
+
+  const KPI=[
+    {label:"在播主播",value:"12,860",unit:"人",acc:"#25f4ee",yoy:"+8.4%",mom:"+2.1%",up:true},
+    {label:"并发观看",value:"186.5",unit:"万",acc:"#9b7cff",yoy:"+12.7%",mom:"+3.6%",up:true},
+    {label:"实时流水",value:"4,732",unit:"万钻",acc:"#fe2c55",yoy:"+15.2%",mom:"-1.8%",up:false},
+    {label:"有效开播率",value:"91.3",unit:"%",acc:"#72ef9c",yoy:"+1.9pp",mom:"+0.6pp",up:true}
+  ];
+  const viewers=[162,168,171,175,183,190,186,192,199,205,201,187];
+  const revenue=[3980,4120,4050,4260,4510,4680,4590,4820,5010,5230,5120,4732];
+  const guild=[
+    {name:"星耀盟 Starlight",value:812},{name:"银河公会 Galaxy",value:735},
+    {name:"炫音传媒 Sonic",value:668},{name:"极光文化 Aurora",value:602},
+    {name:"璀璨星光 Shine",value:541},{name:"次元社 Neo",value:487},
+    {name:"潮玩联盟 Wave",value:433},{name:"云端娱乐 Cloud",value:388}
+  ].sort((a,b)=>a.value-b.value);
+  const dist=[
+    {name:"东南亚",value:38},{name:"中东",value:24},{name:"拉美",value:16},
+    {name:"北美",value:12},{name:"欧洲",value:10}
+  ];
+  const alerts=[
+    {sev:"high",type:"掉播中断",who:"星耀盟 · Luna_LIVE",time:"14:32:07",desc:"头部主播直播流中断超 30s"},
+    {sev:"high",type:"流水骤降",who:"银河公会 · Neo_Star",time:"14:31:44",desc:"5 分钟流水环比下跌 62%"},
+    {sev:"mid",type:"违规风险",who:"炫音传媒 · Mia_Show",time:"14:30:58",desc:"AI 识别疑似违规着装，待人工复核"},
+    {sev:"mid",type:"活动异常",who:"极光文化 · PK 赛事场",time:"14:30:12",desc:"PK 连麦匹配失败率升高至 18%"},
+    {sev:"low",type:"开播波动",who:"次元社 · 新人扶持场",time:"14:29:36",desc:"新人开播率低于目标值 5pp"},
+    {sev:"high",type:"流水骤降",who:"璀璨星光 · Rio_Live",time:"14:28:51",desc:"礼物打赏并发骤降，疑似卡顿"},
+    {sev:"low",type:"违规风险",who:"潮玩联盟 · Sky_TT",time:"14:27:19",desc:"弹幕敏感词命中率轻微升高"},
+    {sev:"mid",type:"掉播中断",who:"云端娱乐 · Ava_Live",time:"14:26:03",desc:"直播流码率不稳，重连 2 次"}
+  ];
+  const rooms=[
+    {id:"LV-98472031",title:"Summer Night · PK 连麦专场",anchor:"Luna_LIVE",handle:"@luna.live.us",guild:"星耀盟 Starlight",region:"US",category:"娱乐 / PK",viewers:"28.4万",revenue:"812万钻",duration:"01:42:18",growth:"+18.6%",risk:"正常",status:"直播中"},
+    {id:"LV-98472116",title:"Sing with Mia · 点歌互动",anchor:"Mia_Show",handle:"@miashow.jp",guild:"炫音传媒 Sonic",region:"JP",category:"才艺 / 音乐",viewers:"19.7万",revenue:"668万钻",duration:"00:58:42",growth:"+11.2%",risk:"关注",status:"直播中"},
+    {id:"LV-98471882",title:"Neo Galaxy Party",anchor:"Neo_Star",handle:"@neo.star.sg",guild:"银河公会 Galaxy",region:"SG",category:"娱乐 / 聊天",viewers:"16.2万",revenue:"735万钻",duration:"02:16:09",growth:"+9.8%",risk:"告警",status:"直播中"},
+    {id:"LV-98471640",title:"Rio Dance Room",anchor:"Rio_Live",handle:"@rio.live.br",guild:"璀璨星光 Shine",region:"BR",category:"才艺 / 舞蹈",viewers:"12.8万",revenue:"541万钻",duration:"01:08:55",growth:"+7.4%",risk:"正常",status:"直播中"},
+    {id:"LV-98470421",title:"Welcome to join my live stream",anchor:"AAAAAH",handle:"@yr1010101.us",guild:"平台主播",region:"US",category:"普通直播",viewers:"655",revenue:"0",duration:"00:07:15",growth:"-3.2%",risk:"关注",status:"已结束"}
+  ];
+  const scopes={
+    guild:{label:"公会主播",anchors:[["Luna_LIVE","星耀盟","812万钻"],["Neo_Star","银河公会","735万钻"],["Mia_Show","炫音传媒","668万钻"],["Rio_Live","璀璨星光","541万钻"]],roomIds:[0,2,1,3]},
+    platform:{label:"平台主播",anchors:[["Luna_LIVE","S 级 · 娱乐","812万钻"],["Mia_Show","S 级 · 才艺","668万钻"],["Ava_Live","A 级 · 聊天","487万钻"],["Sky_TT","A 级 · 游戏","433万钻"]],roomIds:[0,1,3,2]}
+  };
+  const times=[];
+  const now=new Date();
+  for(let i=11;i>=0;i--){const t=new Date(now-i*300000);times.push(String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0"));}
+
+  const kpiRow=document.getElementById("kpiRow");
+  KPI.forEach(k=>kpiRow.insertAdjacentHTML("beforeend",
+    '<article class="kpi" style="--acc:'+k.acc+'"><div class="k-label">'+k.label+'</div>'+
+    '<div class="k-value">'+k.value+'<span class="unit">'+k.unit+'</span></div>'+
+    '<div class="k-delta"><span class="up">同比 ↑ '+k.yoy+'</span><span class="'+(k.up?"up":"down")+'">环比 '+(k.up?"↑ ":"↓ ")+k.mom+'</span></div></article>'));
+
+  const alertList=document.getElementById("alertList");
+  const sevMap={high:["sev-high","高"],mid:["sev-mid","中"],low:["sev-low","低"]};
+  alerts.forEach(a=>{const s=sevMap[a.sev];alertList.insertAdjacentHTML("beforeend",
+    '<div class="alert-item"><span class="sev '+s[0]+'">'+s[1]+'</span><div class="a-body">'+
+    '<div class="a-title">'+a.desc+'</div><div class="a-meta"><span class="a-type">['+a.type+'] '+a.who+'</span><span>'+a.time+'</span></div></div></div>');});
+
+  function renderRankings(scopeName){
+    const data=scopes[scopeName],anchorBox=document.getElementById("anchorRanking"),roomBox=document.getElementById("roomRanking");
+    document.getElementById("anchorScope").textContent=data.label;
+    document.getElementById("roomScope").textContent=data.label;
+    anchorBox.innerHTML=data.anchors.map((a,i)=>'<div class="rank-row"><span class="rank-index">'+String(i+1).padStart(2,"0")+'</span><span class="mini-avatar">'+a[0].slice(0,1)+'</span><p><strong>'+a[0]+'</strong><small>'+a[1]+'</small></p><b>'+a[2]+'</b></div>').join("");
+    roomBox.innerHTML=data.roomIds.map((idx,i)=>{const r=rooms[idx];return '<button class="rank-row room-open" data-room="'+idx+'"><span class="rank-index">'+String(i+1).padStart(2,"0")+'</span><p><strong>'+r.title+'</strong><small>'+r.anchor+' · '+r.viewers+' 在线</small></p><b>'+r.revenue+'</b><em>›</em></button>';}).join("");
+    roomBox.querySelectorAll(".room-open").forEach(b=>b.addEventListener("click",()=>openRoomTab(Number(b.dataset.room))));
+  }
+  document.getElementById("scopeSwitch").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
+    document.querySelectorAll("#scopeSwitch button").forEach(b=>b.classList.remove("active"));button.classList.add("active");renderRankings(button.dataset.scope);
+  }));
+
+  const roomGrid=document.getElementById("roomGrid");
+  roomGrid.innerHTML=rooms.map((r,i)=>'<button class="room-card room-open" data-room="'+i+'"><div class="room-cover cover-'+i+'"><span class="room-status '+(r.status==="已结束"?"ended":"")+'">'+r.status+'</span><span class="risk-badge '+(r.risk==="正常"?"risk-normal":r.risk==="关注"?"risk-watch":"risk-alert")+'">'+r.risk+'</span><span class="cover-avatar">'+r.anchor.slice(0,1)+'</span></div><div class="room-copy"><h3>'+r.title+'</h3><p>'+r.anchor+' · '+r.guild+'</p><div class="room-stats"><span><small>在线</small><strong>'+r.viewers+'</strong></span><span><small>流水</small><strong>'+r.revenue+'</strong></span><span><small>时长</small><strong>'+r.duration+'</strong></span></div><div class="room-action"><span class="'+(r.growth[0]==="+"?"up":"down")+'">'+r.growth+'</span><b>查看详情 →</b></div></div></button>').join("");
+  roomGrid.querySelectorAll(".room-open").forEach(b=>b.addEventListener("click",()=>openRoomTab(Number(b.dataset.room))));
+  renderRankings("guild");
+
+  const drawer=document.getElementById("roomDrawer"),detailValues=["曝光 PV","观看 UV","直播间钻石","新增粉丝","PCU","ACU","平均观看时长","互动率","评论人数","送礼人数","送礼次数","举报 UV"];
+  let detailChart;
+  function openRoomTab(index){
+    const base=location.href.split("?")[0].split("#")[0];
+    window.open(base+"#room="+index,"_blank");
+  }
+  function openRoom(index){
+    const r=rooms[index];
+    document.getElementById("drawerRoomId").textContent="LIVE ROOM · "+r.id;
+    document.getElementById("detailTitle").textContent=r.title;
+    document.getElementById("detailDuration").textContent=r.duration+" · "+r.region;
+    document.getElementById("detailAvatar").textContent=r.anchor.slice(0,1);
+    document.getElementById("detailAnchor").textContent=r.anchor;
+    document.getElementById("detailHandle").textContent=r.handle;
+    document.getElementById("detailGuild").textContent=r.guild;
+    document.getElementById("detailCategory").textContent=r.category;
+    document.getElementById("detailRegion").textContent=r.region;
+    document.getElementById("detailRisk").textContent=r.risk;
+    const labels=["流量 · 曝光 PV","看播 · 观看 UV","点赞 · 点赞 UV","关注 · 新增粉丝","送礼 · 送礼人数","营收 · 直播钻石","看播 · PCU","看播 · ACU","看播 · 平均时长","互动 · 评论人数","送礼 · 送礼次数","安全 · 举报 UV"];
+    const vals=["428.6万",r.viewers,"16.8万","8,426","12,806",r.revenue,"32.8万","18.6万","08:42","4.8万","96,420",r.risk==="告警"?"126":"18"];
+    detailValues.splice(0,detailValues.length,...labels);
+    document.getElementById("metricMatrix").innerHTML=detailValues.map((label,i)=>'<article><span>'+label+'</span><strong>'+vals[i]+'</strong><small>'+(i===11?r.risk:"+ "+(8+i)+".4%")+'</small></article>').join("");
+    drawer.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+    setTimeout(()=>{
+      if(detailChart)detailChart.dispose();
+      detailChart=echarts.init(document.getElementById("detailTrend"));
+      detailChart.setOption({animationDuration:500,tooltip:{trigger:"axis",backgroundColor:"rgba(20,20,24,.96)",borderColor:"rgba(255,255,255,.15)",textStyle:{color:"#fff"}},grid:{left:42,right:24,top:20,bottom:30},xAxis:{type:"category",boundaryGap:false,data:["0m","10m","20m","30m","40m","50m","60m"],axisLabel:{color:"#777780"},axisLine:{lineStyle:{color:"rgba(255,255,255,.08)"}}},yAxis:{type:"value",axisLabel:{color:"#777780",formatter:"{value}%"},splitLine:{lineStyle:{color:"rgba(255,255,255,.07)"}}},series:[
+        {name:"流量",type:"line",smooth:true,data:[41,48,44,59,72,79,89],lineStyle:{color:"#25f4ee",width:3},itemStyle:{color:"#25f4ee"},areaStyle:{color:"rgba(37,244,238,.08)"}},
+        {name:"看播",type:"line",smooth:true,data:[32,38,42,51,61,73,85],lineStyle:{color:"#49a8ff",width:2},itemStyle:{color:"#49a8ff"}},
+        {name:"点赞",type:"line",smooth:true,data:[18,23,34,32,51,66,88],lineStyle:{color:"#9b7cff",width:2},itemStyle:{color:"#9b7cff"}},
+        {name:"关注",type:"line",smooth:true,data:[8,12,17,25,38,52,69],lineStyle:{color:"#ffcb45",width:2},itemStyle:{color:"#ffcb45"}},
+        {name:"送礼",type:"line",smooth:true,data:[12,16,19,32,34,51,62],lineStyle:{color:"#fe2c55",width:3},itemStyle:{color:"#fe2c55"}},
+        {name:"营收",type:"line",smooth:true,data:[9,13,22,28,39,58,86],lineStyle:{color:"#72ef9c",width:3},itemStyle:{color:"#72ef9c"}}
+      ]});
+      if(window.__liveRoomTimer)clearInterval(window.__liveRoomTimer);
+      window.__liveRoomTimer=setInterval(()=>{
+        if(!detailChart||detailChart.isDisposed())return;
+        const next=detailChart.getOption().series.map(series=>{
+          const data=series.data.map(v=>Number(v.value===undefined?v:v.value));
+          const last=data[data.length-1],change=Math.round((Math.random()-.35)*8);
+          return {data:data.slice(1).concat(Math.max(4,Math.min(100,last+change)))};
+        });
+        detailChart.setOption({series:next});
+      },2000);
+    },50);
+  }
+  function closeRoom(){
+    if(document.body.classList.contains("detail-mode")){window.close();location.href=location.href.split("#")[0];return;}
+    drawer.classList.remove("open");drawer.setAttribute("aria-hidden","true");document.body.style.overflow="";
+  }
+  document.getElementById("closeDrawer").addEventListener("click",closeRoom);
+  drawer.addEventListener("click",event=>{if(event.target===drawer)closeRoom();});
+  document.addEventListener("keydown",event=>{if(event.key==="Escape")closeRoom();});
+
+  if(typeof echarts==="undefined"){setStatus("图表资源加载中…");return setTimeout(boot,180);}
+  const axis="#777780",grid="rgba(255,255,255,.075)",tip="rgba(20,20,24,.96)";
+  let trend,rank,distribution;
+  try{
+    trend=echarts.init(document.getElementById("trend"));
+    trend.setOption({
+      animationDuration:650,
+      tooltip:{trigger:"axis",backgroundColor:tip,borderColor:"rgba(255,255,255,.15)",textStyle:{color:"#f5f5f7"}},
+      grid:{left:48,right:52,top:24,bottom:34},
+      xAxis:{type:"category",boundaryGap:false,data:times,axisLabel:{color:axis,fontSize:10},axisLine:{lineStyle:{color:grid}},axisTick:{show:false}},
+      yAxis:[
+        {type:"value",axisLabel:{color:axis,fontSize:10},splitLine:{lineStyle:{color:grid}}},
+        {type:"value",position:"right",axisLabel:{color:axis,fontSize:10},splitLine:{show:false}}
+      ],
+      series:[
+        {name:"并发观看(万)",type:"line",smooth:.4,symbol:"circle",symbolSize:6,data:viewers,
+          lineStyle:{width:3,color:"#25f4ee"},itemStyle:{color:"#111115",borderColor:"#25f4ee",borderWidth:2},
+          areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:"rgba(37,244,238,.22)"},{offset:1,color:"rgba(37,244,238,0)"}])}},
+        {name:"实时流水(万钻)",type:"line",yAxisIndex:1,smooth:.4,symbol:"circle",symbolSize:6,data:revenue,
+          lineStyle:{width:3,color:"#fe2c55"},itemStyle:{color:"#111115",borderColor:"#fe2c55",borderWidth:2},
+          areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:"rgba(254,44,85,.2)"},{offset:1,color:"rgba(254,44,85,0)"}])}}
+      ]
+    });
+
+    rank=echarts.init(document.getElementById("rank"));
+    rank.setOption({
+      animationDuration:650,
+      tooltip:{trigger:"axis",axisPointer:{type:"shadow"},backgroundColor:tip,borderColor:"rgba(255,255,255,.15)",textStyle:{color:"#f5f5f7"},formatter:p=>p[0].name+"<br>实时流水 "+p[0].value+" 万钻"},
+      grid:{left:8,right:54,top:4,bottom:12,containLabel:true},
+      xAxis:{type:"value",show:false},
+      yAxis:{type:"category",data:guild.map(d=>d.name),axisLabel:{color:"#b7b7bf",fontSize:10},axisLine:{show:false},axisTick:{show:false}},
+      series:[{type:"bar",data:guild.map(d=>d.value),barWidth:12,showBackground:true,
+        backgroundStyle:{color:"rgba(255,255,255,.045)",borderRadius:8},
+        label:{show:true,position:"right",color:"#f1f1f4",fontSize:9,formatter:"{c}"},
+        itemStyle:{borderRadius:8,color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:"#fe2c55"},{offset:1,color:"#25f4ee"}])}}]
+    });
+
+    distribution=echarts.init(document.getElementById("dist"));
+    distribution.setOption({
+      animationDuration:650,
+      tooltip:{trigger:"item",formatter:"{b}: {c}%",backgroundColor:tip,borderColor:"rgba(255,255,255,.15)",textStyle:{color:"#f5f5f7"}},
+      legend:{orient:"vertical",right:2,top:"center",textStyle:{color:"#a3a3ab",fontSize:10},itemWidth:8,itemHeight:8,itemGap:8},
+      color:["#25f4ee","#fe2c55","#9b7cff","#ffcb45","#72ef9c"],
+      series:[{type:"pie",radius:["52%","78%"],center:["32%","52%"],avoidLabelOverlap:true,
+        itemStyle:{borderColor:"#141417",borderWidth:3},label:{show:false},data:dist}]
+    });
+    const roomParam=new URLSearchParams(location.hash.slice(1)).get("room");
+    if(roomParam!==null){
+      document.body.classList.add("detail-mode");
+      openRoom(Math.max(0,Math.min(rooms.length-1,Number(roomParam)||0)));
+      document.title=rooms[Math.max(0,Math.min(rooms.length-1,Number(roomParam)||0))].anchor+" · 全屏实时跟播";
+    }
+    setStatus("");
+  }catch(err){setStatus("图表渲染失败："+(err&&err.message?err.message:String(err)));}
+  addEventListener("resize",()=>{trend&&trend.resize();rank&&rank.resize();distribution&&distribution.resize();});
+})();
+</script>
+</body>
+</html>
