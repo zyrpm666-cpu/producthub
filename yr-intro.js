@@ -10,7 +10,7 @@
   if (!intro || !skipButton || !voiceButton || !voiceLabel) return;
 
   const greeting =
-    "YR. It's great to see you. All systems are online. I hope everything goes smoothly for you today.";
+    "It's great to see you. All systems are online. I hope everything goes smoothly for you today.";
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const timers = [];
   let dismissed = false;
@@ -213,7 +213,7 @@
   timers.push(clockTimer);
 
   schedule(
-    () => setBootStatus("IDENTITY CONFIRMED", "Welcome, YR. Personal interface is ready."),
+    () => setBootStatus("IDENTITY CONFIRMED", "Welcome back. Personal interface is ready."),
     prefersReducedMotion ? 120 : 1250,
   );
   schedule(
