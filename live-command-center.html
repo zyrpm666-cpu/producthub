@@ -322,13 +322,14 @@
   }
   .follow-grid {
     display:grid;
-    height:calc(100vh - 94px);
-    min-height:650px;
+    height:auto;
+    min-height:1120px;
     grid-template-columns:minmax(330px,.96fr) minmax(410px,1.2fr) minmax(280px,.82fr);
-    grid-template-rows:minmax(0,.43fr) minmax(0,.57fr);
+    grid-template-rows:minmax(280px,.43fr) minmax(360px,.57fr) minmax(410px,auto);
     grid-template-areas:
       "video performance funnel"
-      "video trend ai";
+      "video trend ai"
+      "sources sources sources";
     gap:10px;
   }
   .follow-panel {
@@ -616,6 +617,233 @@
     content:"";
     background:rgba(255,255,255,.12);
   }
+  .source-card {
+    display:flex;
+    grid-area:sources;
+    flex-direction:column;
+  }
+  .source-card .follow-head {
+    min-height:58px;
+  }
+  .source-head-actions {
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .source-switch {
+    display:flex;
+    gap:3px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:9px;
+    padding:3px;
+    background:rgba(255,255,255,.025);
+  }
+  .source-switch button {
+    border:0;
+    border-radius:6px;
+    padding:6px 10px;
+    color:#777780;
+    background:transparent;
+    font:inherit;
+    font-size:8px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  .source-switch button:hover { color:#f7f7f8; }
+  .source-switch button.active {
+    color:#08080a;
+    background:var(--cyan);
+    box-shadow:0 0 18px rgba(37,244,238,.18);
+  }
+  .source-layout {
+    display:grid;
+    min-height:0;
+    flex:1;
+    grid-template-columns:230px minmax(0,1fr);
+    gap:0;
+  }
+  .source-summary {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    border-right:1px solid rgba(255,255,255,.065);
+    padding:14px 15px 13px;
+    background:
+      radial-gradient(circle at 12% 8%,rgba(37,244,238,.1),transparent 52%),
+      rgba(255,255,255,.012);
+  }
+  .source-summary > p {
+    margin:0;
+    color:#777780;
+    font-size:8px;
+    line-height:1.55;
+  }
+  .source-kpis {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin:10px 0;
+  }
+  .source-kpis article {
+    min-width:0;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:10px;
+    padding:9px;
+    background:rgba(255,255,255,.025);
+  }
+  .source-kpis span {
+    display:block;
+    color:#74747d;
+    font-size:7px;
+  }
+  .source-kpis strong {
+    display:block;
+    margin-top:5px;
+    font-size:15px;
+    letter-spacing:-.02em;
+  }
+  .source-kpis article:nth-child(1) strong { color:var(--cyan); }
+  .source-kpis article:nth-child(2) strong { color:#49a8ff; }
+  .source-top {
+    border:1px solid rgba(37,244,238,.14);
+    border-radius:11px;
+    padding:10px;
+    background:rgba(37,244,238,.035);
+  }
+  .source-top span {
+    color:#777780;
+    font-size:7px;
+  }
+  .source-top strong {
+    display:block;
+    margin:5px 0 3px;
+    overflow:hidden;
+    color:#f6f6f8;
+    font-size:11px;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .source-top small {
+    color:var(--green);
+    font-size:7px;
+  }
+  .source-table-wrap {
+    min-width:0;
+    overflow:hidden;
+    padding:9px 12px 11px;
+  }
+  .source-table-head,
+  .source-row {
+    display:grid;
+    grid-template-columns:minmax(180px,1.28fr) minmax(150px,1fr) minmax(150px,1fr) 78px 58px;
+    align-items:center;
+    gap:12px;
+  }
+  .source-table-head {
+    min-height:26px;
+    padding:0 8px;
+    color:#666670;
+    font-size:7px;
+    font-weight:800;
+    letter-spacing:.08em;
+  }
+  .source-rows {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    column-gap:12px;
+  }
+  .source-rows .source-row {
+    grid-template-columns:minmax(130px,1.25fr) minmax(105px,1fr) minmax(105px,1fr) 65px 48px;
+  }
+  .source-row {
+    position:relative;
+    min-height:53px;
+    border-top:1px solid rgba(255,255,255,.055);
+    padding:5px 8px;
+  }
+  .source-row:nth-child(1),
+  .source-row:nth-child(2) {
+    border-top-color:rgba(255,255,255,.09);
+  }
+  .source-name {
+    min-width:0;
+  }
+  .source-name strong {
+    display:flex;
+    align-items:center;
+    gap:5px;
+    overflow:hidden;
+    font-size:9px;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .source-name small {
+    display:block;
+    margin-top:3px;
+    overflow:hidden;
+    color:#676771;
+    font-size:7px;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .source-help {
+    display:inline-grid;
+    width:13px;
+    height:13px;
+    flex:0 0 auto;
+    place-items:center;
+    border:1px solid #62626c;
+    border-radius:50%;
+    color:#777780;
+    font-size:7px;
+    font-style:normal;
+    cursor:help;
+  }
+  .source-meter {
+    min-width:0;
+  }
+  .source-meter p {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:5px;
+    margin:0 0 5px;
+    font-size:8px;
+  }
+  .source-meter p span { color:#767680; font-size:7px; }
+  .source-meter i {
+    display:block;
+    height:4px;
+    overflow:hidden;
+    border-radius:99px;
+    background:rgba(255,255,255,.065);
+  }
+  .source-meter i::after {
+    display:block;
+    width:var(--source-width);
+    height:100%;
+    border-radius:inherit;
+    content:"";
+    background:var(--source-color);
+    box-shadow:0 0 9px color-mix(in srgb,var(--source-color) 42%,transparent);
+    transition:width .35s ease;
+  }
+  .source-rate {
+    font-size:10px;
+  }
+  .source-delta {
+    color:var(--green);
+    font-size:7px;
+    font-weight:800;
+    text-align:right;
+  }
+  .source-delta.down { color:var(--red); }
+  .source-foot {
+    display:none;
+    color:#63636d;
+    font-size:7px;
+  }
   .trend-card {
     display:flex;
     grid-area:trend;
@@ -758,13 +986,19 @@
   }
   @media(max-width:1180px) {
     .follow-grid {
-      min-height:760px;
+      min-height:1450px;
       grid-template-columns:minmax(300px,.9fr) minmax(360px,1.1fr);
-      grid-template-rows:repeat(3,minmax(240px,auto));
+      grid-template-rows:repeat(3,minmax(240px,auto)) minmax(520px,auto);
       grid-template-areas:
         "video performance"
         "video trend"
-        "funnel ai";
+        "funnel ai"
+        "sources sources";
+    }
+    .source-layout { grid-template-columns:210px minmax(0,1fr); }
+    .source-rows { grid-template-columns:1fr; }
+    .source-rows .source-row {
+      grid-template-columns:minmax(180px,1.25fr) minmax(125px,1fr) minmax(125px,1fr) 70px 50px;
     }
   }
   @media(max-width:760px) {
@@ -777,13 +1011,34 @@
       min-height:0;
       grid-template-columns:1fr;
       grid-template-rows:none;
-      grid-template-areas:"video" "performance" "funnel" "trend" "ai";
+      grid-template-areas:"video" "performance" "funnel" "sources" "trend" "ai";
     }
     .live-view { min-height:620px; }
     .performance-card { min-height:330px; }
     .funnel-card { min-height:360px; }
+    .source-card { min-height:780px; }
     .trend-card { min-height:400px; }
     .ai-card { min-height:360px; }
+    .source-card .follow-head {
+      align-items:flex-start;
+      flex-direction:column;
+    }
+    .source-head-actions {
+      width:100%;
+      justify-content:space-between;
+    }
+    .source-layout { grid-template-columns:1fr; }
+    .source-summary {
+      border-right:0;
+      border-bottom:1px solid rgba(255,255,255,.065);
+    }
+    .source-kpis { grid-template-columns:repeat(4,1fr); }
+    .source-rows { grid-template-columns:1fr; }
+    .source-rows .source-row {
+      grid-template-columns:minmax(112px,1.2fr) minmax(90px,1fr) minmax(90px,1fr) 56px 42px;
+      gap:7px;
+    }
+    .source-table-head { display:none; }
     .anchor-main { align-items:flex-start; flex-direction:column; }
     .room-facts { justify-content:flex-start; }
   }
@@ -941,9 +1196,38 @@
         </div>
       </section>
 
+      <section class="follow-panel source-card" aria-labelledby="sourceTitle">
+        <div class="follow-head">
+          <div><p class="kicker">04 · ENTRY TRAFFIC</p><h3 id="sourceTitle">入口流量拆解 · 曝光与看播</h3></div>
+          <div class="source-head-actions">
+            <div class="source-switch" id="sourceSwitch" role="group" aria-label="入口流量排序方式">
+              <button class="active" type="button" data-source-sort="exposure">曝光排序</button>
+              <button type="button" data-source-sort="viewers">看播排序</button>
+              <button type="button" data-source-sort="rate">转化率</button>
+            </div>
+            <span class="sync-badge"><i></i>实时更新</span>
+          </div>
+        </div>
+        <div class="source-layout">
+          <aside class="source-summary">
+            <p>追踪用户从各入口被曝光到进入直播间的完整链路，数据每 2 秒模拟刷新。</p>
+            <div class="source-kpis">
+              <article><span>入口曝光</span><strong id="sourceExposureTotal">428.6万</strong></article>
+              <article><span>入口看播</span><strong id="sourceViewerTotal">28.4万</strong></article>
+              <article><span>整体进房率</span><strong id="sourceRateTotal">6.63%</strong></article>
+              <article><span>入口覆盖</span><strong>11</strong></article>
+            </div>
+            <div class="source-top"><span>当前第一流量入口</span><strong id="sourceTopName">feed_card_draw</strong><small id="sourceTopInsight">贡献 29.0% 曝光 · 较 10 分钟前 +8.4%</small></div>
+          </aside>
+          <div class="source-table-wrap">
+            <div class="source-rows" id="sourceRows" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="follow-panel trend-card">
         <div class="follow-head">
-          <div><p class="kicker">04 · SAME TIMELINE</p><h3>六大指标实时联动趋势</h3></div>
+          <div><p class="kicker">05 · SAME TIMELINE</p><h3>六大指标实时联动趋势</h3></div>
           <div class="multi-legend"><span class="line-traffic">曝光</span><span class="line-watch">看播</span><span class="line-like">点赞</span><span class="line-follow">关注</span><span class="line-gift">送礼</span><span class="line-revenue">营收</span></div>
         </div>
         <div class="trend-chart"><div id="detailTrend"></div></div>
@@ -951,7 +1235,7 @@
       </section>
 
       <section class="follow-panel ai-card">
-        <div class="follow-head"><div><p class="kicker">05 · AI COPILOT</p><h3>AI 实时扫描建议</h3></div><span class="scan-state"><i></i>扫描中</span></div>
+        <div class="follow-head"><div><p class="kicker">06 · AI COPILOT</p><h3>AI 实时扫描建议</h3></div><span class="scan-state"><i></i>扫描中</span></div>
         <div class="ai-priority"><span>优先处理 · 转化机会</span><strong>推荐流量正在放大，建议立即承接</strong><p id="aiRiskText">未来 5 分钟是送礼转化窗口，可开启 PK 互动并置顶礼物目标。</p></div>
         <ul class="ai-actions">
           <li><b>1</b><div><strong>强化礼物引导</strong><p>看播到送礼转化仍低于同层优质场 0.4pp，建议主播口播目标。</p></div></li>
@@ -1010,6 +1294,20 @@
     {id:"LV-98471640",title:"Rio Dance Room",anchor:"Rio_Live",handle:"@rio.live.br",guild:"璀璨星光 Shine",region:"BR",category:"才艺 / 舞蹈",viewers:"12.8万",revenue:"541万钻",duration:"01:08:55",growth:"+7.4%",risk:"正常",status:"直播中"},
     {id:"LV-98470421",title:"Welcome to join my live stream",anchor:"AAAAAH",handle:"@yr1010101.us",guild:"平台主播",region:"US",category:"普通直播",viewers:"655",revenue:"0",duration:"00:07:15",growth:"-3.2%",risk:"关注",status:"已结束"}
   ];
+  const entrySourceDefinitions=[
+    {key:"feed_head_click",label:"Feed 顶部头像点击",share:.10,rate:8.6,delta:9.2},
+    {key:"feed_card_draw",label:"信息流直播卡片曝光",share:.29,rate:4.6,delta:8.4},
+    {key:"live",label:"LIVE 频道入口",share:.08,rate:7.9,delta:6.8},
+    {key:"message",label:"站内消息入口",share:.04,rate:9.3,delta:-2.1},
+    {key:"feed_card_click",label:"信息流直播卡片点击",share:.13,rate:7.3,delta:12.6},
+    {key:"push",label:"外部 Push 唤回",share:.03,rate:8.8,delta:3.8},
+    {key:"feed_head_draw",label:"Feed 顶部头像曝光",share:.20,rate:5.0,delta:5.1},
+    {key:"homepage_follow",label:"首页关注流入口",share:.065,rate:10.6,delta:15.4},
+    {key:"others",label:"其他分发入口",share:.015,rate:4.6,delta:-4.3},
+    {key:"inner_push",label:"站内 Push 入口",share:.025,rate:11.1,delta:7.2},
+    {key:"others_homepage",label:"其他首页入口",share:.025,rate:6.1,delta:1.6}
+  ];
+  const roomExposureTotals=[4286000,3530000,3120000,2480000,38200];
   const scopes={
     guild:{label:"公会主播",anchors:[["Luna_LIVE","星耀盟","812万钻"],["Neo_Star","银河公会","735万钻"],["Mia_Show","炫音传媒","668万钻"],["Rio_Live","璀璨星光","541万钻"]],roomIds:[0,2,1,3]},
     platform:{label:"平台主播",anchors:[["Luna_LIVE","S 级 · 娱乐","812万钻"],["Mia_Show","S 级 · 才艺","668万钻"],["Ava_Live","A 级 · 聊天","487万钻"],["Sky_TT","A 级 · 游戏","433万钻"]],roomIds:[0,1,3,2]}
@@ -1049,12 +1347,69 @@
 
   const drawer=document.getElementById("roomDrawer");
   let detailChart;
+  let currentRoomIndex=0,currentSourceSort="exposure",sourcePulse=0;
+  function metricNumber(value){
+    const text=String(value).replace(/,/g,"");
+    if(text.includes("万"))return Math.round(parseFloat(text)*10000);
+    return Number(text.replace(/[^\d.]/g,""))||0;
+  }
+  function compactMetric(value){
+    if(value>=1000000)return (value/10000).toFixed(1).replace(/\.0$/,"")+"万";
+    if(value>=10000)return (value/10000).toFixed(value>=100000?1:2).replace(/0$/,"").replace(/\.$/,"")+"万";
+    return Math.round(value).toLocaleString("zh-CN");
+  }
+  function sourceData(roomIndex,pulse){
+    const totalExposure=roomExposureTotals[roomIndex]||roomExposureTotals[0];
+    const targetViewers=metricNumber(rooms[roomIndex].viewers);
+    let exposureUsed=0;
+    const data=entrySourceDefinitions.map((source,index)=>{
+      const movement=1+Math.sin((pulse+index*1.7)*.72)*.008;
+      const exposure=index===entrySourceDefinitions.length-1?totalExposure-exposureUsed:Math.round(totalExposure*source.share*movement);
+      exposureUsed+=exposure;
+      return {...source,exposure,rawViewers:exposure*source.rate/100};
+    });
+    const rawViewerTotal=data.reduce((sum,item)=>sum+item.rawViewers,0);
+    let viewerUsed=0;
+    data.forEach((item,index)=>{
+      item.viewers=index===data.length-1?targetViewers-viewerUsed:Math.max(0,Math.round(item.rawViewers/rawViewerTotal*targetViewers));
+      viewerUsed+=item.viewers;
+      item.actualRate=item.exposure?item.viewers/item.exposure*100:0;
+    });
+    return {data,totalExposure,targetViewers};
+  }
+  function renderSources(roomIndex,pulse=0){
+    const result=sourceData(roomIndex,pulse);
+    const exposureMax=Math.max(...result.data.map(item=>item.exposure));
+    const viewerMax=Math.max(...result.data.map(item=>item.viewers));
+    const sorted=[...result.data].sort((a,b)=>currentSourceSort==="rate"?b.actualRate-a.actualRate:currentSourceSort==="viewers"?b.viewers-a.viewers:b.exposure-a.exposure);
+    document.getElementById("sourceRows").innerHTML=sorted.map(item=>
+      '<article class="source-row">'+
+        '<div class="source-name"><strong>'+item.key+'<i class="source-help" title="'+item.label+'" aria-label="'+item.label+'">?</i></strong><small>'+item.label+'</small></div>'+
+        '<div class="source-meter"><p><span>曝光</span><b>'+compactMetric(item.exposure)+'</b></p><i style="--source-width:'+Math.max(2,item.exposure/exposureMax*100).toFixed(1)+'%;--source-color:#25f4ee"></i></div>'+
+        '<div class="source-meter"><p><span>看播</span><b>'+compactMetric(item.viewers)+'</b></p><i style="--source-width:'+Math.max(2,item.viewers/viewerMax*100).toFixed(1)+'%;--source-color:#49a8ff"></i></div>'+
+        '<strong class="source-rate">'+item.actualRate.toFixed(2)+'%</strong>'+
+        '<span class="source-delta '+(item.delta<0?"down":"")+'">'+(item.delta>=0?"↑ ":"↓ ")+Math.abs(item.delta).toFixed(1)+'%</span>'+
+      '</article>'
+    ).join("");
+    const top=[...result.data].sort((a,b)=>b.exposure-a.exposure)[0];
+    document.getElementById("sourceExposureTotal").textContent=compactMetric(result.totalExposure);
+    document.getElementById("sourceViewerTotal").textContent=compactMetric(result.targetViewers);
+    document.getElementById("sourceRateTotal").textContent=(result.targetViewers/result.totalExposure*100).toFixed(2)+"%";
+    document.getElementById("sourceTopName").textContent=top.key;
+    document.getElementById("sourceTopInsight").textContent="贡献 "+(top.exposure/result.totalExposure*100).toFixed(1)+"% 曝光 · 较 10 分钟前 "+(top.delta>=0?"+":"")+top.delta.toFixed(1)+"%";
+  }
+  document.getElementById("sourceSwitch").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
+    document.querySelectorAll("#sourceSwitch button").forEach(item=>item.classList.toggle("active",item===button));
+    currentSourceSort=button.dataset.sourceSort;
+    renderSources(currentRoomIndex,sourcePulse);
+  }));
   function openRoomTab(index){
     const base=location.href.split("?")[0].split("#")[0];
     window.open(base+"#room="+index,"_blank");
   }
   function openRoom(index){
     const r=rooms[index];
+    currentRoomIndex=index;sourcePulse=0;
     document.getElementById("drawerRoomId").textContent="LIVE ROOM · "+r.id;
     document.getElementById("detailTitle").textContent=r.title;
     document.getElementById("detailDuration").textContent=r.duration+" · "+r.region;
@@ -1074,11 +1429,12 @@
       ["直播营收",r.revenue,"+15.3% vs 同层"]
     ];
     document.getElementById("metricMatrix").innerHTML=performance.map(item=>'<article><span>'+item[0]+'</span><strong>'+item[1]+'</strong><small>'+item[2]+'</small></article>').join("");
-    document.getElementById("funnelExposure").textContent="428.6万";
+    document.getElementById("funnelExposure").textContent=compactMetric(roomExposureTotals[index]||roomExposureTotals[0]);
     document.getElementById("funnelWatch").textContent=r.viewers;
     document.getElementById("funnelGift").textContent="1.28万";
-    document.getElementById("funnelWatchRate").textContent=r.viewers==="655"?"0.02%":"6.63%";
+    document.getElementById("funnelWatchRate").textContent=(metricNumber(r.viewers)/(roomExposureTotals[index]||roomExposureTotals[0])*100).toFixed(2)+"%";
     document.getElementById("funnelGiftRate").textContent=r.viewers==="655"?"0.00%":"4.51%";
+    renderSources(index,sourcePulse);
     document.getElementById("aiRiskText").textContent=r.risk==="告警"?"检测到内容与互动风险叠加，请运营立即进入直播间复核。":"未来 5 分钟是送礼转化窗口，可开启 PK 互动并置顶礼物目标。";
     drawer.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
     setTimeout(()=>{
@@ -1095,6 +1451,8 @@
       if(window.__liveRoomTimer)clearInterval(window.__liveRoomTimer);
       window.__liveRoomTimer=setInterval(()=>{
         if(!detailChart||detailChart.isDisposed())return;
+        sourcePulse+=1;
+        renderSources(index,sourcePulse);
         const targets=[86,78,82,68,60,84];
         const next=detailChart.getOption().series.map((series,index)=>{
           const data=series.data.map(v=>Number(v.value===undefined?v:v.value));
