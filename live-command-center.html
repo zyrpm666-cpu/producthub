@@ -323,9 +323,9 @@
   .follow-grid {
     display:grid;
     height:auto;
-    min-height:1120px;
+    min-height:1370px;
     grid-template-columns:minmax(330px,.96fr) minmax(410px,1.2fr) minmax(280px,.82fr);
-    grid-template-rows:minmax(280px,.43fr) minmax(360px,.57fr) minmax(410px,auto);
+    grid-template-rows:minmax(280px,.43fr) minmax(360px,.57fr) minmax(660px,auto);
     grid-template-areas:
       "video performance funnel"
       "video trend ai"
@@ -660,7 +660,7 @@
     display:grid;
     min-height:0;
     flex:1;
-    grid-template-columns:230px minmax(0,1fr);
+    grid-template-columns:220px minmax(470px,.92fr) minmax(420px,1.08fr);
     gap:0;
   }
   .source-summary {
@@ -750,22 +750,38 @@
   }
   .source-rows {
     display:grid;
-    grid-template-columns:1fr 1fr;
-    column-gap:12px;
+    grid-template-columns:1fr;
   }
   .source-rows .source-row {
-    grid-template-columns:minmax(130px,1.25fr) minmax(105px,1fr) minmax(105px,1fr) 65px 48px;
+    grid-template-columns:minmax(135px,1.25fr) minmax(110px,1fr) minmax(110px,1fr) 62px 48px;
   }
   .source-row {
     position:relative;
-    min-height:53px;
+    width:100%;
+    min-height:48px;
+    border:0;
     border-top:1px solid rgba(255,255,255,.055);
     padding:5px 8px;
+    color:inherit;
+    background:transparent;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+    transition:.18s ease;
   }
-  .source-row:nth-child(1),
-  .source-row:nth-child(2) {
+  .source-row:nth-child(1) {
     border-top-color:rgba(255,255,255,.09);
   }
+  .source-row:hover {
+    border-radius:8px;
+    background:rgba(255,255,255,.025);
+  }
+  .source-row.selected {
+    border-radius:8px;
+    background:linear-gradient(90deg,rgba(37,244,238,.075),rgba(37,244,238,.01));
+    box-shadow:inset 2px 0 var(--cyan);
+  }
+  .source-row.selected .source-name strong { color:var(--cyan); }
   .source-name {
     min-width:0;
   }
@@ -843,6 +859,77 @@
     display:none;
     color:#63636d;
     font-size:7px;
+  }
+  .source-trend-panel {
+    display:flex;
+    min-width:0;
+    min-height:0;
+    flex-direction:column;
+    border-left:1px solid rgba(255,255,255,.065);
+    padding:11px 13px 10px;
+    background:
+      radial-gradient(circle at 85% 5%,rgba(73,168,255,.075),transparent 45%),
+      rgba(255,255,255,.008);
+  }
+  .source-trend-head {
+    display:flex;
+    min-height:36px;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .source-trend-head span {
+    display:block;
+    color:#666670;
+    font-size:7px;
+  }
+  .source-trend-head strong {
+    display:block;
+    margin-top:4px;
+    font-size:10px;
+  }
+  .source-chart-switch {
+    display:flex;
+    gap:3px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:8px;
+    padding:3px;
+    background:rgba(255,255,255,.02);
+  }
+  .source-chart-switch button {
+    border:0;
+    border-radius:5px;
+    padding:5px 8px;
+    color:#6f6f79;
+    background:transparent;
+    font:inherit;
+    font-size:7px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .source-chart-switch button.active {
+    color:#f7f7f8;
+    background:rgba(73,168,255,.16);
+  }
+  #sourceTrend {
+    width:100%;
+    min-height:0;
+    flex:1;
+  }
+  .source-trend-insight {
+    display:flex;
+    min-height:42px;
+    align-items:center;
+    gap:8px;
+    border-top:1px solid rgba(73,168,255,.13);
+    padding:8px 2px 0;
+    color:#85858f;
+    font-size:7px;
+    line-height:1.45;
+  }
+  .source-trend-insight strong {
+    color:#49a8ff;
+    white-space:nowrap;
   }
   .trend-card {
     display:flex;
@@ -986,9 +1073,9 @@
   }
   @media(max-width:1180px) {
     .follow-grid {
-      min-height:1450px;
+      min-height:1900px;
       grid-template-columns:minmax(300px,.9fr) minmax(360px,1.1fr);
-      grid-template-rows:repeat(3,minmax(240px,auto)) minmax(520px,auto);
+      grid-template-rows:repeat(3,minmax(240px,auto)) minmax(930px,auto);
       grid-template-areas:
         "video performance"
         "video trend"
@@ -996,9 +1083,14 @@
         "sources sources";
     }
     .source-layout { grid-template-columns:210px minmax(0,1fr); }
-    .source-rows { grid-template-columns:1fr; }
     .source-rows .source-row {
       grid-template-columns:minmax(180px,1.25fr) minmax(125px,1fr) minmax(125px,1fr) 70px 50px;
+    }
+    .source-trend-panel {
+      min-height:350px;
+      grid-column:1/-1;
+      border-top:1px solid rgba(255,255,255,.065);
+      border-left:0;
     }
   }
   @media(max-width:760px) {
@@ -1016,7 +1108,7 @@
     .live-view { min-height:620px; }
     .performance-card { min-height:330px; }
     .funnel-card { min-height:360px; }
-    .source-card { min-height:780px; }
+    .source-card { min-height:1220px; }
     .trend-card { min-height:400px; }
     .ai-card { min-height:360px; }
     .source-card .follow-head {
@@ -1033,10 +1125,13 @@
       border-bottom:1px solid rgba(255,255,255,.065);
     }
     .source-kpis { grid-template-columns:repeat(4,1fr); }
-    .source-rows { grid-template-columns:1fr; }
     .source-rows .source-row {
       grid-template-columns:minmax(112px,1.2fr) minmax(90px,1fr) minmax(90px,1fr) 56px 42px;
       gap:7px;
+    }
+    .source-trend-panel {
+      min-height:360px;
+      grid-column:auto;
     }
     .source-table-head { display:none; }
     .anchor-main { align-items:flex-start; flex-direction:column; }
@@ -1222,6 +1317,18 @@
           <div class="source-table-wrap">
             <div class="source-rows" id="sourceRows" aria-live="polite"></div>
           </div>
+          <section class="source-trend-panel" aria-labelledby="sourceTrendTitle">
+            <div class="source-trend-head">
+              <div><span>ENTRY TREND · LAST 30 MIN</span><strong id="sourceTrendTitle">feed_card_draw · 曝光与看播联动</strong></div>
+              <div class="source-chart-switch" id="sourceChartSwitch" role="group" aria-label="入口趋势指标">
+                <button type="button" data-source-metric="exposure">曝光曲线</button>
+                <button type="button" data-source-metric="viewers">看播曲线</button>
+                <button class="active" type="button" data-source-metric="linked">曝光 ↔ 看播</button>
+              </div>
+            </div>
+            <div id="sourceTrend" role="img" aria-label="不同直播入口随时间变化的趋势曲线"></div>
+            <div class="source-trend-insight"><strong>时间关联</strong><span id="sourceTrendInsight">看播峰值较曝光峰值滞后约 2 分钟，入口承接效率稳定。</span></div>
+          </section>
         </div>
       </section>
 
@@ -1346,8 +1453,8 @@
   renderRankings("guild");
 
   const drawer=document.getElementById("roomDrawer");
-  let detailChart;
-  let currentRoomIndex=0,currentSourceSort="exposure",sourcePulse=0;
+  let detailChart,sourceTrendChart;
+  let currentRoomIndex=0,currentSourceSort="exposure",currentSourceMetric="linked",currentSourceSelected="feed_card_draw",sourcePulse=0;
   function metricNumber(value){
     const text=String(value).replace(/,/g,"");
     if(text.includes("万"))return Math.round(parseFloat(text)*10000);
@@ -1377,19 +1484,87 @@
     });
     return {data,totalExposure,targetViewers};
   }
+  const sourceTrendTimes=Array.from({length:16},(_,index)=>index===15?"NOW":"-"+(30-index*2)+"m");
+  const sourceColors=["#25f4ee","#49a8ff","#9b7cff","#ffcb45","#fe2c55","#72ef9c"];
+  function sourceTimelineValues(item,metric,roomIndex){
+    const sourceIndex=entrySourceDefinitions.findIndex(source=>source.key===item.key);
+    const total=metric==="exposure"?item.exposure:item.viewers;
+    const phase=sourceIndex*.58+roomIndex*.31;
+    const lag=metric==="viewers"?1:0;
+    const raw=sourceTrendTimes.map((_,index)=>{
+      const timelineIndex=Math.max(0,index-lag);
+      const ramp=.54+timelineIndex*.034;
+      const wave=Math.sin(timelineIndex*.72+phase)*.11+Math.cos(timelineIndex*.31+phase)*.055;
+      const lift=timelineIndex>8?(timelineIndex-8)*.018:0;
+      return Math.max(.28,ramp+wave+lift);
+    });
+    const sum=raw.reduce((acc,value)=>acc+value,0);
+    return raw.map(value=>Math.round(total*.34*value/sum));
+  }
+  function renderSourceTrend(result){
+    if(!sourceTrendChart)return;
+    const selected=result.data.find(item=>item.key===currentSourceSelected)||result.data[0];
+    const baseAxis={
+      type:"value",
+      axisLabel:{color:"#686872",fontSize:8,formatter:value=>compactMetric(value)},
+      axisLine:{show:false},
+      axisTick:{show:false},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,.055)"}}
+    };
+    let series,yAxis,legend,chartTitle,insight;
+    if(currentSourceMetric==="linked"){
+      series=[
+        {name:"曝光 PV",type:"line",smooth:.42,symbol:"none",data:sourceTimelineValues(selected,"exposure",currentRoomIndex),lineStyle:{color:"#25f4ee",width:3},itemStyle:{color:"#25f4ee"},areaStyle:{color:"rgba(37,244,238,.075)"}},
+        {name:"看播 UV",type:"line",yAxisIndex:1,smooth:.42,symbol:"none",data:sourceTimelineValues(selected,"viewers",currentRoomIndex),lineStyle:{color:"#49a8ff",width:3},itemStyle:{color:"#49a8ff"},areaStyle:{color:"rgba(73,168,255,.045)"}}
+      ];
+      yAxis=[baseAxis,{...baseAxis,position:"right",splitLine:{show:false}}];
+      legend={data:["曝光 PV","看播 UV"],right:4,top:0,textStyle:{color:"#888892",fontSize:8},itemWidth:14,itemHeight:3};
+      chartTitle=selected.key+" · 曝光与看播联动";
+      insight=selected.key+" 的看播曲线在曝光抬升后约 2 分钟响应，当前进房率 "+selected.actualRate.toFixed(2)+"%，承接效率"+(selected.actualRate>6?"较强":"仍有提升空间")+"。";
+    }else{
+      const sorted=[...result.data].sort((a,b)=>currentSourceMetric==="exposure"?b.exposure-a.exposure:b.viewers-a.viewers);
+      const chosen=[selected,...sorted.filter(item=>item.key!==selected.key)].slice(0,5);
+      series=chosen.map((item,index)=>({
+        name:item.key,
+        type:"line",
+        smooth:.42,
+        symbol:"none",
+        data:sourceTimelineValues(item,currentSourceMetric,currentRoomIndex),
+        lineStyle:{color:sourceColors[index],width:item.key===selected.key?3:1.8,opacity:item.key===selected.key?1:.72},
+        itemStyle:{color:sourceColors[index]},
+        emphasis:{focus:"series"}
+      }));
+      yAxis=baseAxis;
+      legend={type:"scroll",data:chosen.map(item=>item.key),left:0,right:0,top:0,textStyle:{color:"#85858f",fontSize:7},itemWidth:12,itemHeight:3,pageTextStyle:{color:"#777780"}};
+      chartTitle=(currentSourceMetric==="exposure"?"主要入口曝光":"主要入口看播")+"趋势对比";
+      insight="已高亮 "+selected.key+"；点击左侧其他入口，可在同一时间轴观察其峰值、波动和流量承接变化。";
+    }
+    document.getElementById("sourceTrendTitle").textContent=chartTitle;
+    document.getElementById("sourceTrendInsight").textContent=insight;
+    sourceTrendChart.setOption({
+      animationDuration:420,
+      color:sourceColors,
+      tooltip:{trigger:"axis",backgroundColor:"rgba(15,15,19,.96)",borderColor:"rgba(255,255,255,.13)",textStyle:{color:"#f6f6f8",fontSize:9}},
+      legend,
+      grid:{left:46,right:currentSourceMetric==="linked"?48:18,top:34,bottom:30},
+      xAxis:{type:"category",boundaryGap:false,data:sourceTrendTimes,axisLabel:{color:"#666670",fontSize:8,interval:2},axisLine:{lineStyle:{color:"rgba(255,255,255,.07)"}},axisTick:{show:false}},
+      yAxis,
+      series
+    },true);
+  }
   function renderSources(roomIndex,pulse=0){
     const result=sourceData(roomIndex,pulse);
     const exposureMax=Math.max(...result.data.map(item=>item.exposure));
     const viewerMax=Math.max(...result.data.map(item=>item.viewers));
     const sorted=[...result.data].sort((a,b)=>currentSourceSort==="rate"?b.actualRate-a.actualRate:currentSourceSort==="viewers"?b.viewers-a.viewers:b.exposure-a.exposure);
     document.getElementById("sourceRows").innerHTML=sorted.map(item=>
-      '<article class="source-row">'+
+      '<button type="button" class="source-row '+(item.key===currentSourceSelected?"selected":"")+'" data-source-key="'+item.key+'" aria-label="查看 '+item.key+' 的时间趋势">'+
         '<div class="source-name"><strong>'+item.key+'<i class="source-help" title="'+item.label+'" aria-label="'+item.label+'">?</i></strong><small>'+item.label+'</small></div>'+
         '<div class="source-meter"><p><span>曝光</span><b>'+compactMetric(item.exposure)+'</b></p><i style="--source-width:'+Math.max(2,item.exposure/exposureMax*100).toFixed(1)+'%;--source-color:#25f4ee"></i></div>'+
         '<div class="source-meter"><p><span>看播</span><b>'+compactMetric(item.viewers)+'</b></p><i style="--source-width:'+Math.max(2,item.viewers/viewerMax*100).toFixed(1)+'%;--source-color:#49a8ff"></i></div>'+
         '<strong class="source-rate">'+item.actualRate.toFixed(2)+'%</strong>'+
         '<span class="source-delta '+(item.delta<0?"down":"")+'">'+(item.delta>=0?"↑ ":"↓ ")+Math.abs(item.delta).toFixed(1)+'%</span>'+
-      '</article>'
+      '</button>'
     ).join("");
     const top=[...result.data].sort((a,b)=>b.exposure-a.exposure)[0];
     document.getElementById("sourceExposureTotal").textContent=compactMetric(result.totalExposure);
@@ -1397,10 +1572,22 @@
     document.getElementById("sourceRateTotal").textContent=(result.targetViewers/result.totalExposure*100).toFixed(2)+"%";
     document.getElementById("sourceTopName").textContent=top.key;
     document.getElementById("sourceTopInsight").textContent="贡献 "+(top.exposure/result.totalExposure*100).toFixed(1)+"% 曝光 · 较 10 分钟前 "+(top.delta>=0?"+":"")+top.delta.toFixed(1)+"%";
+    renderSourceTrend(result);
   }
   document.getElementById("sourceSwitch").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
     document.querySelectorAll("#sourceSwitch button").forEach(item=>item.classList.toggle("active",item===button));
     currentSourceSort=button.dataset.sourceSort;
+    renderSources(currentRoomIndex,sourcePulse);
+  }));
+  document.getElementById("sourceRows").addEventListener("click",event=>{
+    const row=event.target.closest(".source-row");
+    if(!row)return;
+    currentSourceSelected=row.dataset.sourceKey;
+    renderSources(currentRoomIndex,sourcePulse);
+  });
+  document.getElementById("sourceChartSwitch").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
+    document.querySelectorAll("#sourceChartSwitch button").forEach(item=>item.classList.toggle("active",item===button));
+    currentSourceMetric=button.dataset.sourceMetric;
     renderSources(currentRoomIndex,sourcePulse);
   }));
   function openRoomTab(index){
@@ -1448,6 +1635,9 @@
         {name:"送礼",type:"line",smooth:true,data:[12,16,19,32,34,51,62],lineStyle:{color:"#fe2c55",width:3},itemStyle:{color:"#fe2c55"}},
         {name:"营收",type:"line",smooth:true,data:[9,13,22,28,39,58,86],lineStyle:{color:"#72ef9c",width:3},itemStyle:{color:"#72ef9c"}}
       ]});
+      if(sourceTrendChart)sourceTrendChart.dispose();
+      sourceTrendChart=echarts.init(document.getElementById("sourceTrend"));
+      renderSourceTrend(sourceData(index,sourcePulse));
       if(window.__liveRoomTimer)clearInterval(window.__liveRoomTimer);
       window.__liveRoomTimer=setInterval(()=>{
         if(!detailChart||detailChart.isDisposed())return;
@@ -1526,7 +1716,7 @@
     }
     setStatus("");
   }catch(err){setStatus("图表渲染失败："+(err&&err.message?err.message:String(err)));}
-  addEventListener("resize",()=>{trend&&trend.resize();rank&&rank.resize();distribution&&distribution.resize();detailChart&&detailChart.resize();});
+  addEventListener("resize",()=>{trend&&trend.resize();rank&&rank.resize();distribution&&distribution.resize();detailChart&&detailChart.resize();sourceTrendChart&&sourceTrendChart.resize();});
 })();
 </script>
 </body>
