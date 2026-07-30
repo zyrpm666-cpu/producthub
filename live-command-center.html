@@ -76,6 +76,34 @@
   }
   .updated { margin:0 0 4px; color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
 
+  .region-filter {
+    display:flex; min-height:60px; align-items:center; justify-content:space-between; gap:18px;
+    margin-bottom:12px; border:1px solid var(--line); border-radius:18px; padding:10px 12px 10px 16px;
+    background:linear-gradient(105deg,rgba(37,244,238,.055),transparent 32%),rgba(18,18,22,.88);
+    box-shadow:0 12px 34px rgba(0,0,0,.2);
+  }
+  .region-filter-copy { display:flex; min-width:160px; align-items:center; gap:10px; }
+  .region-filter-copy i {
+    width:8px; height:8px; flex:0 0 auto; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 0 5px rgba(37,244,238,.09),3px 0 var(--pink);
+  }
+  .region-filter-copy span { display:block; color:#6f6f79; font-size:8px; letter-spacing:.12em; }
+  .region-filter-copy strong { display:block; margin-top:3px; font-size:11px; }
+  .region-switch { display:flex; min-width:0; gap:4px; overflow-x:auto; scrollbar-width:none; }
+  .region-switch::-webkit-scrollbar { display:none; }
+  .region-switch button {
+    min-width:66px; flex:0 0 auto; border:1px solid transparent; border-radius:10px; padding:8px 11px;
+    color:#767680; background:transparent; font-size:9px; font-weight:900; letter-spacing:.08em;
+    cursor:pointer; transition:.18s ease;
+  }
+  .region-switch button:hover {
+    border-color:rgba(255,255,255,.08); color:#f5f5f7; background:rgba(255,255,255,.025);
+  }
+  .region-switch button.active {
+    border-color:rgba(37,244,238,.32); color:#071012; background:var(--cyan);
+    box-shadow:3px 3px 0 rgba(254,44,85,.22),0 0 22px rgba(37,244,238,.12);
+  }
+
   .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
   .kpi,.panel {
     border:1px solid var(--line);
@@ -175,6 +203,9 @@
     .hero h2 { font-size:clamp(27px,9vw,38px); }
     .hero h2::after { width:9px; height:9px; margin-left:9px; }
     .updated { margin:0; }
+    .region-filter { align-items:flex-start; flex-direction:column; gap:9px; }
+    .region-switch { width:100%; }
+    .region-switch button { min-width:72px; }
     .kpi-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
     .kpi { min-height:128px; padding:14px; border-radius:17px; }
     .k-value { font-size:clamp(23px,7vw,28px); }
@@ -242,6 +273,7 @@
   .risk-badge{right:11px;border:1px solid rgba(255,255,255,.15);background:rgba(10,10,12,.65)}.risk-normal{color:var(--green)}.risk-watch{color:var(--yellow)}.risk-alert{color:#ff6683}
   .cover-avatar{position:relative;z-index:1;color:#fff;font-size:44px;font-weight:900;text-shadow:-3px 0 rgba(37,244,238,.55),3px 0 rgba(254,44,85,.55)}
   .room-copy{padding:15px}.room-copy h3{overflow:hidden;margin:0;font-size:13px;text-overflow:ellipsis;white-space:nowrap}.room-copy>p{margin:6px 0 14px;color:#777780;font-size:9px}
+  .room-region{display:inline-flex;margin-left:6px;border:1px solid rgba(37,244,238,.2);border-radius:5px;padding:2px 5px;color:var(--cyan);background:rgba(37,244,238,.055);font-size:6px;font-weight:900;letter-spacing:.08em;vertical-align:1px}
   .room-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.room-stats span{display:grid;gap:3px;padding:8px;border-radius:10px;background:rgba(255,255,255,.03)}
   .room-stats small{color:#707078;font-size:7px}.room-stats strong{overflow:hidden;font-size:10px;text-overflow:ellipsis}.room-action{display:flex;justify-content:space-between;margin-top:13px;font-size:9px}.room-action b{color:var(--cyan)}
   .drawer-backdrop{position:fixed;inset:0;z-index:100;display:none;justify-content:flex-end;background:rgba(0,0,0,.7);backdrop-filter:blur(8px)}
@@ -1156,8 +1188,21 @@
   </header>
 
   <section class="hero">
-    <div><p class="kicker">GLOBAL BUSINESS · NOW</p><h2>从全局经营，到每一个直播间</h2></div>
+    <div><p class="kicker" id="globalScopeLabel">GLOBAL BUSINESS · ALL REGIONS</p><h2>从全局经营，到每一个直播间</h2></div>
     <p class="updated" id="updated">数据持续刷新中</p>
+  </section>
+
+  <section class="region-filter" aria-labelledby="regionFilterTitle">
+    <div class="region-filter-copy"><i></i><div><span>BUSINESS SCOPE</span><strong id="regionFilterTitle">Region 经营视图</strong></div></div>
+    <div class="region-switch" id="regionSwitch" role="group" aria-label="选择 Region">
+      <button class="active" type="button" data-region="ALL">ALL</button>
+      <button type="button" data-region="MENAT">MENAT</button>
+      <button type="button" data-region="AMS">AMS</button>
+      <button type="button" data-region="EU">EU</button>
+      <button type="button" data-region="SEA">SEA</button>
+      <button type="button" data-region="NEA">NEA</button>
+      <button type="button" data-region="OTHERS">OTHERS</button>
+    </div>
   </section>
 
   <section class="kpi-row" id="kpiRow" aria-label="核心实时指标"></section>
@@ -1173,20 +1218,21 @@
     <article class="panel p-rank">
       <div class="panel-head">
         <div><p class="kicker">02 · TOP GUILDS</p><h3>公会实时流水榜</h3></div>
-        <span class="chip">万钻</span>
+        <span class="chip" id="rankRegionChip">ALL · 万钻</span>
       </div>
       <div id="rank" class="chart"></div>
     </article>
     <article class="panel p-dist">
       <div class="panel-head">
         <div><p class="kicker">03 · AUDIENCE MAP</p><h3>直播区域分布</h3></div>
+        <span class="chip" id="distRegionChip">GLOBAL</span>
       </div>
       <div id="dist" class="chart"></div>
     </article>
     <article class="panel p-alert">
       <div class="panel-head">
         <div><p class="kicker">04 · LIVE ALERTS</p><h3>实时告警事件</h3></div>
-        <span class="chip">8 条</span>
+        <span class="chip" id="alertCount">8 条</span>
       </div>
       <div class="alert-list" id="alertList"></div>
     </article>
@@ -1384,22 +1430,47 @@
     {name:"东南亚",value:38},{name:"中东",value:24},{name:"拉美",value:16},
     {name:"北美",value:12},{name:"欧洲",value:10}
   ];
+  const regionProfiles={
+    ALL:{kpiValues:["12,860","186.5","4,732","91.3"],viewerScale:1,revenueScale:1,guilds:guild,dist},
+    MENAT:{kpiValues:["2,180","31.8","986","89.7"],viewerScale:.17,revenueScale:.21,guilds:[
+      {name:"Oasis Network",value:121},{name:"Riyadh Stars",value:143},{name:"MENA Pulse",value:168},{name:"Desert Moon",value:194},{name:"Arena Arabia",value:221}
+    ],dist:[{name:"SA",value:34},{name:"AE",value:26},{name:"TR",value:18},{name:"EG",value:13},{name:"其他",value:9}]},
+    AMS:{kpiValues:["3,460","52.6","1,436","92.4"],viewerScale:.282,revenueScale:.303,guilds:[
+      {name:"Maple Live",value:176},{name:"Latam Beat",value:204},{name:"Rio Shine",value:248},{name:"Starlight US",value:331},{name:"Americas Wave",value:382}
+    ],dist:[{name:"US",value:38},{name:"BR",value:27},{name:"MX",value:15},{name:"CA",value:12},{name:"其他",value:8}]},
+    EU:{kpiValues:["1,940","25.7","692","90.8"],viewerScale:.138,revenueScale:.146,guilds:[
+      {name:"Iberia House",value:86},{name:"Paris Nova",value:101},{name:"Berlin Pulse",value:116},{name:"Euro Live",value:149},{name:"North Star EU",value:171}
+    ],dist:[{name:"DE",value:25},{name:"FR",value:22},{name:"UK",value:21},{name:"ES",value:17},{name:"其他",value:15}]},
+    SEA:{kpiValues:["2,760","42.9","1,024","93.1"],viewerScale:.23,revenueScale:.216,guilds:[
+      {name:"Manila Beat",value:134},{name:"Bangkok Live",value:158},{name:"Jakarta Star",value:181},{name:"Galaxy SG",value:236},{name:"SEA United",value:281}
+    ],dist:[{name:"ID",value:28},{name:"TH",value:23},{name:"VN",value:19},{name:"PH",value:17},{name:"其他",value:13}]},
+    NEA:{kpiValues:["1,870","27.4","458","88.9"],viewerScale:.147,revenueScale:.097,guilds:[
+      {name:"Taipei Spark",value:58},{name:"Seoul Wave",value:69},{name:"Tokyo Stage",value:82},{name:"Sonic JP",value:114},{name:"NEA Creators",value:135}
+    ],dist:[{name:"JP",value:42},{name:"KR",value:29},{name:"TW",value:14},{name:"HK",value:9},{name:"其他",value:6}]},
+    OTHERS:{kpiValues:["650","6.1","136","85.6"],viewerScale:.033,revenueScale:.029,guilds:[
+      {name:"Frontier Live",value:18},{name:"Southern Cross",value:22},{name:"Horizon Africa",value:27},{name:"Open World",value:31},{name:"Global Next",value:38}
+    ],dist:[{name:"ZA",value:31},{name:"AU",value:25},{name:"IN",value:19},{name:"NZ",value:11},{name:"其他",value:14}]}
+  };
+  Object.values(regionProfiles).forEach(profile=>profile.guilds.sort((a,b)=>a.value-b.value));
   const alerts=[
-    {sev:"high",type:"掉播中断",who:"星耀盟 · Luna_LIVE",time:"14:32:07",desc:"头部主播直播流中断超 30s"},
-    {sev:"high",type:"流水骤降",who:"银河公会 · Neo_Star",time:"14:31:44",desc:"5 分钟流水环比下跌 62%"},
-    {sev:"mid",type:"违规风险",who:"炫音传媒 · Mia_Show",time:"14:30:58",desc:"AI 识别疑似违规着装，待人工复核"},
-    {sev:"mid",type:"活动异常",who:"极光文化 · PK 赛事场",time:"14:30:12",desc:"PK 连麦匹配失败率升高至 18%"},
-    {sev:"low",type:"开播波动",who:"次元社 · 新人扶持场",time:"14:29:36",desc:"新人开播率低于目标值 5pp"},
-    {sev:"high",type:"流水骤降",who:"璀璨星光 · Rio_Live",time:"14:28:51",desc:"礼物打赏并发骤降，疑似卡顿"},
-    {sev:"low",type:"违规风险",who:"潮玩联盟 · Sky_TT",time:"14:27:19",desc:"弹幕敏感词命中率轻微升高"},
-    {sev:"mid",type:"掉播中断",who:"云端娱乐 · Ava_Live",time:"14:26:03",desc:"直播流码率不稳，重连 2 次"}
+    {region:"AMS",sev:"high",type:"掉播中断",who:"星耀盟 · Luna_LIVE",time:"14:32:07",desc:"头部主播直播流中断超 30s"},
+    {region:"SEA",sev:"high",type:"流水骤降",who:"银河公会 · Neo_Star",time:"14:31:44",desc:"5 分钟流水环比下跌 62%"},
+    {region:"NEA",sev:"mid",type:"违规风险",who:"炫音传媒 · Mia_Show",time:"14:30:58",desc:"AI 识别疑似违规着装，待人工复核"},
+    {region:"MENAT",sev:"mid",type:"活动异常",who:"极光文化 · PK 赛事场",time:"14:30:12",desc:"PK 连麦匹配失败率升高至 18%"},
+    {region:"SEA",sev:"low",type:"开播波动",who:"次元社 · 新人扶持场",time:"14:29:36",desc:"新人开播率低于目标值 5pp"},
+    {region:"AMS",sev:"high",type:"流水骤降",who:"璀璨星光 · Rio_Live",time:"14:28:51",desc:"礼物打赏并发骤降，疑似卡顿"},
+    {region:"EU",sev:"low",type:"违规风险",who:"潮玩联盟 · Sky_TT",time:"14:27:19",desc:"弹幕敏感词命中率轻微升高"},
+    {region:"OTHERS",sev:"mid",type:"掉播中断",who:"云端娱乐 · Ava_Live",time:"14:26:03",desc:"直播流码率不稳，重连 2 次"}
   ];
   const rooms=[
-    {id:"LV-98472031",title:"Summer Night · PK 连麦专场",anchor:"Luna_LIVE",handle:"@luna.live.us",guild:"星耀盟 Starlight",region:"US",category:"娱乐 / PK",viewers:"28.4万",revenue:"812万钻",duration:"01:42:18",growth:"+18.6%",risk:"正常",status:"直播中"},
-    {id:"LV-98472116",title:"Sing with Mia · 点歌互动",anchor:"Mia_Show",handle:"@miashow.jp",guild:"炫音传媒 Sonic",region:"JP",category:"才艺 / 音乐",viewers:"19.7万",revenue:"668万钻",duration:"00:58:42",growth:"+11.2%",risk:"关注",status:"直播中"},
-    {id:"LV-98471882",title:"Neo Galaxy Party",anchor:"Neo_Star",handle:"@neo.star.sg",guild:"银河公会 Galaxy",region:"SG",category:"娱乐 / 聊天",viewers:"16.2万",revenue:"735万钻",duration:"02:16:09",growth:"+9.8%",risk:"告警",status:"直播中"},
-    {id:"LV-98471640",title:"Rio Dance Room",anchor:"Rio_Live",handle:"@rio.live.br",guild:"璀璨星光 Shine",region:"BR",category:"才艺 / 舞蹈",viewers:"12.8万",revenue:"541万钻",duration:"01:08:55",growth:"+7.4%",risk:"正常",status:"直播中"},
-    {id:"LV-98470421",title:"Welcome to join my live stream",anchor:"AAAAAH",handle:"@yr1010101.us",guild:"平台主播",region:"US",category:"普通直播",viewers:"655",revenue:"0",duration:"00:07:15",growth:"-3.2%",risk:"关注",status:"已结束"}
+    {id:"LV-98472031",title:"Summer Night · PK 连麦专场",anchor:"Luna_LIVE",handle:"@luna.live.us",guild:"星耀盟 Starlight",region:"US",businessRegion:"AMS",category:"娱乐 / PK",viewers:"28.4万",revenue:"812万钻",duration:"01:42:18",growth:"+18.6%",risk:"正常",status:"直播中"},
+    {id:"LV-98472116",title:"Sing with Mia · 点歌互动",anchor:"Mia_Show",handle:"@miashow.jp",guild:"炫音传媒 Sonic",region:"JP",businessRegion:"NEA",category:"才艺 / 音乐",viewers:"19.7万",revenue:"668万钻",duration:"00:58:42",growth:"+11.2%",risk:"关注",status:"直播中"},
+    {id:"LV-98471882",title:"Neo Galaxy Party",anchor:"Neo_Star",handle:"@neo.star.sg",guild:"银河公会 Galaxy",region:"SG",businessRegion:"SEA",category:"娱乐 / 聊天",viewers:"16.2万",revenue:"735万钻",duration:"02:16:09",growth:"+9.8%",risk:"告警",status:"直播中"},
+    {id:"LV-98471640",title:"Rio Dance Room",anchor:"Rio_Live",handle:"@rio.live.br",guild:"璀璨星光 Shine",region:"BR",businessRegion:"AMS",category:"才艺 / 舞蹈",viewers:"12.8万",revenue:"541万钻",duration:"01:08:55",growth:"+7.4%",risk:"正常",status:"直播中"},
+    {id:"LV-98470421",title:"Welcome to join my live stream",anchor:"AAAAAH",handle:"@yr1010101.us",guild:"平台主播",region:"US",businessRegion:"AMS",category:"普通直播",viewers:"655",revenue:"0",duration:"00:07:15",growth:"-3.2%",risk:"关注",status:"已结束"},
+    {id:"LV-98472408",title:"Dubai Midnight · Gift Challenge",anchor:"Noura_Live",handle:"@noura.live.ae",guild:"Oasis Network",region:"AE",businessRegion:"MENAT",category:"娱乐 / 挑战",viewers:"11.6万",revenue:"392万钻",duration:"01:18:26",growth:"+14.8%",risk:"正常",status:"直播中"},
+    {id:"LV-98472531",title:"Paris After Dark · Music Room",anchor:"Elise_Music",handle:"@elise.music.fr",guild:"Paris Nova",region:"FR",businessRegion:"EU",category:"才艺 / 音乐",viewers:"8.9万",revenue:"284万钻",duration:"00:49:12",growth:"+8.7%",risk:"正常",status:"直播中"},
+    {id:"LV-98472602",title:"Cape Town Social Club",anchor:"Ava_Live",handle:"@ava.live.za",guild:"Horizon Africa",region:"ZA",businessRegion:"OTHERS",category:"娱乐 / 聊天",viewers:"4.3万",revenue:"126万钻",duration:"00:38:47",growth:"+5.1%",risk:"关注",status:"直播中"}
   ];
   const entrySourceDefinitions=[
     {key:"feed_head_click",label:"Feed 顶部头像点击",share:.10,rate:8.6,delta:9.2},
@@ -1414,7 +1485,7 @@
     {key:"inner_push",label:"站内 Push 入口",share:.025,rate:11.1,delta:7.2},
     {key:"others_homepage",label:"其他首页入口",share:.025,rate:6.1,delta:1.6}
   ];
-  const roomExposureTotals=[4286000,3530000,3120000,2480000,38200];
+  const roomExposureTotals=[4286000,3530000,3120000,2480000,38200,1960000,1520000,830000];
   const scopes={
     guild:{label:"公会主播",anchors:[["Luna_LIVE","星耀盟","812万钻"],["Neo_Star","银河公会","735万钻"],["Mia_Show","炫音传媒","668万钻"],["Rio_Live","璀璨星光","541万钻"]],roomIds:[0,2,1,3]},
     platform:{label:"平台主播",anchors:[["Luna_LIVE","S 级 · 娱乐","812万钻"],["Mia_Show","S 级 · 才艺","668万钻"],["Ava_Live","A 级 · 聊天","487万钻"],["Sky_TT","A 级 · 游戏","433万钻"]],roomIds:[0,1,3,2]}
@@ -1424,32 +1495,83 @@
   for(let i=11;i>=0;i--){const t=new Date(now-i*300000);times.push(String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0"));}
 
   const kpiRow=document.getElementById("kpiRow");
-  KPI.forEach(k=>kpiRow.insertAdjacentHTML("beforeend",
-    '<article class="kpi" style="--acc:'+k.acc+'"><div class="k-label">'+k.label+'</div>'+
-    '<div class="k-value">'+k.value+'<span class="unit">'+k.unit+'</span></div>'+
-    '<div class="k-delta"><span class="up">同比 ↑ '+k.yoy+'</span><span class="'+(k.up?"up":"down")+'">环比 '+(k.up?"↑ ":"↓ ")+k.mom+'</span></div></article>'));
-
   const alertList=document.getElementById("alertList");
   const sevMap={high:["sev-high","高"],mid:["sev-mid","中"],low:["sev-low","低"]};
-  alerts.forEach(a=>{const s=sevMap[a.sev];alertList.insertAdjacentHTML("beforeend",
-    '<div class="alert-item"><span class="sev '+s[0]+'">'+s[1]+'</span><div class="a-body">'+
-    '<div class="a-title">'+a.desc+'</div><div class="a-meta"><span class="a-type">['+a.type+'] '+a.who+'</span><span>'+a.time+'</span></div></div></div>');});
+  const roomGrid=document.getElementById("roomGrid");
+  let currentRegion="ALL",currentScopeName="guild";
+  let trend,rank,distribution;
+
+  function renderKpis(regionName){
+    const profile=regionProfiles[regionName];
+    kpiRow.innerHTML=KPI.map((k,index)=>
+      '<article class="kpi" style="--acc:'+k.acc+'"><div class="k-label">'+k.label+'</div>'+
+      '<div class="k-value">'+profile.kpiValues[index]+'<span class="unit">'+k.unit+'</span></div>'+
+      '<div class="k-delta"><span class="up">同比 ↑ '+k.yoy+'</span><span class="'+(k.up?"up":"down")+'">环比 '+(k.up?"↑ ":"↓ ")+k.mom+'</span></div></article>'
+    ).join("");
+  }
+  function renderAlerts(regionName){
+    const visible=regionName==="ALL"?alerts:alerts.filter(alert=>alert.region===regionName);
+    alertList.innerHTML=visible.map(a=>{const s=sevMap[a.sev];return '<div class="alert-item"><span class="sev '+s[0]+'">'+s[1]+'</span><div class="a-body">'+
+      '<div class="a-title">'+a.desc+'</div><div class="a-meta"><span class="a-type">['+a.region+' · '+a.type+'] '+a.who+'</span><span>'+a.time+'</span></div></div></div>';
+    }).join("");
+    document.getElementById("alertCount").textContent=visible.length+" 条";
+  }
+  function regionRoomEntries(regionName){
+    return rooms.map((room,index)=>({room,index})).filter(item=>regionName==="ALL"||item.room.businessRegion===regionName);
+  }
 
   function renderRankings(scopeName){
+    currentScopeName=scopeName;
     const data=scopes[scopeName],anchorBox=document.getElementById("anchorRanking"),roomBox=document.getElementById("roomRanking");
-    document.getElementById("anchorScope").textContent=data.label;
-    document.getElementById("roomScope").textContent=data.label;
-    anchorBox.innerHTML=data.anchors.map((a,i)=>'<div class="rank-row"><span class="rank-index">'+String(i+1).padStart(2,"0")+'</span><span class="mini-avatar">'+a[0].slice(0,1)+'</span><p><strong>'+a[0]+'</strong><small>'+a[1]+'</small></p><b>'+a[2]+'</b></div>').join("");
-    roomBox.innerHTML=data.roomIds.map((idx,i)=>{const r=rooms[idx];return '<button class="rank-row room-open" data-room="'+idx+'"><span class="rank-index">'+String(i+1).padStart(2,"0")+'</span><p><strong>'+r.title+'</strong><small>'+r.anchor+' · '+r.viewers+' 在线</small></p><b>'+r.revenue+'</b><em>›</em></button>';}).join("");
+    let anchors,roomIds,label=data.label;
+    if(currentRegion==="ALL"){
+      anchors=data.anchors;
+      roomIds=data.roomIds;
+    }else{
+      const entries=regionRoomEntries(currentRegion).sort((a,b)=>parseFloat(b.room.revenue)-parseFloat(a.room.revenue));
+      anchors=entries.slice(0,4).map(item=>[item.room.anchor,item.room.guild,item.room.revenue]);
+      roomIds=entries.slice(0,4).map(item=>item.index);
+      label=currentRegion+" · "+data.label;
+    }
+    document.getElementById("anchorScope").textContent=label;
+    document.getElementById("roomScope").textContent=label;
+    anchorBox.innerHTML=anchors.map((a,i)=>'<div class="rank-row"><span class="rank-index">'+String(i+1).padStart(2,"0")+'</span><span class="mini-avatar">'+a[0].slice(0,1)+'</span><p><strong>'+a[0]+'</strong><small>'+a[1]+'</small></p><b>'+a[2]+'</b></div>').join("");
+    roomBox.innerHTML=roomIds.map((idx,i)=>{const r=rooms[idx];return '<button class="rank-row room-open" data-room="'+idx+'"><span class="rank-index">'+String(i+1).padStart(2,"0")+'</span><p><strong>'+r.title+'</strong><small>'+r.businessRegion+' · '+r.anchor+' · '+r.viewers+' 在线</small></p><b>'+r.revenue+'</b><em>›</em></button>';}).join("");
     roomBox.querySelectorAll(".room-open").forEach(b=>b.addEventListener("click",()=>openRoomTab(Number(b.dataset.room))));
   }
   document.getElementById("scopeSwitch").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
     document.querySelectorAll("#scopeSwitch button").forEach(b=>b.classList.remove("active"));button.classList.add("active");renderRankings(button.dataset.scope);
   }));
 
-  const roomGrid=document.getElementById("roomGrid");
-  roomGrid.innerHTML=rooms.map((r,i)=>'<button class="room-card room-open" data-room="'+i+'"><div class="room-cover cover-'+i+'"><span class="room-status '+(r.status==="已结束"?"ended":"")+'">'+r.status+'</span><span class="risk-badge '+(r.risk==="正常"?"risk-normal":r.risk==="关注"?"risk-watch":"risk-alert")+'">'+r.risk+'</span><span class="cover-avatar">'+r.anchor.slice(0,1)+'</span></div><div class="room-copy"><h3>'+r.title+'</h3><p>'+r.anchor+' · '+r.guild+'</p><div class="room-stats"><span><small>在线</small><strong>'+r.viewers+'</strong></span><span><small>流水</small><strong>'+r.revenue+'</strong></span><span><small>时长</small><strong>'+r.duration+'</strong></span></div><div class="room-action"><span class="'+(r.growth[0]==="+"?"up":"down")+'">'+r.growth+'</span><b>查看详情 →</b></div></div></button>').join("");
-  roomGrid.querySelectorAll(".room-open").forEach(b=>b.addEventListener("click",()=>openRoomTab(Number(b.dataset.room))));
+  function renderRooms(regionName){
+    roomGrid.innerHTML=regionRoomEntries(regionName).map(({room:r,index:i})=>
+      '<button class="room-card room-open" data-room="'+i+'"><div class="room-cover cover-'+(i%5)+'"><span class="room-status '+(r.status==="已结束"?"ended":"")+'">'+r.status+'</span><span class="risk-badge '+(r.risk==="正常"?"risk-normal":r.risk==="关注"?"risk-watch":"risk-alert")+'">'+r.risk+'</span><span class="cover-avatar">'+r.anchor.slice(0,1)+'</span></div><div class="room-copy"><h3>'+r.title+'</h3><p>'+r.anchor+' · '+r.guild+'<span class="room-region">'+r.businessRegion+'</span></p><div class="room-stats"><span><small>在线</small><strong>'+r.viewers+'</strong></span><span><small>流水</small><strong>'+r.revenue+'</strong></span><span><small>时长</small><strong>'+r.duration+'</strong></span></div><div class="room-action"><span class="'+(r.growth[0]==="+"?"up":"down")+'">'+r.growth+'</span><b>查看详情 →</b></div></div></button>'
+    ).join("");
+    roomGrid.querySelectorAll(".room-open").forEach(b=>b.addEventListener("click",()=>openRoomTab(Number(b.dataset.room))));
+  }
+  function applyRegion(regionName){
+    currentRegion=regionName;
+    const profile=regionProfiles[regionName];
+    document.querySelectorAll("#regionSwitch button").forEach(button=>button.classList.toggle("active",button.dataset.region===regionName));
+    document.getElementById("globalScopeLabel").textContent="GLOBAL BUSINESS · "+(regionName==="ALL"?"ALL REGIONS":regionName);
+    document.getElementById("regionFilterTitle").textContent=(regionName==="ALL"?"Global":regionName)+" Region 经营视图";
+    document.getElementById("rankRegionChip").textContent=regionName+" · 万钻";
+    document.getElementById("distRegionChip").textContent=regionName==="ALL"?"GLOBAL":regionName;
+    renderKpis(regionName);
+    renderAlerts(regionName);
+    renderRooms(regionName);
+    renderRankings(currentScopeName);
+    if(trend)trend.setOption({series:[
+      {data:viewers.map(value=>Number((value*profile.viewerScale).toFixed(1)))},
+      {data:revenue.map(value=>Math.round(value*profile.revenueScale))}
+    ]});
+    if(rank)rank.setOption({yAxis:{data:profile.guilds.map(item=>item.name)},series:[{data:profile.guilds.map(item=>item.value)}]});
+    if(distribution)distribution.setOption({legend:{data:profile.dist.map(item=>item.name)},series:[{data:profile.dist}]});
+  }
+  document.getElementById("regionSwitch").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>applyRegion(button.dataset.region)));
+  renderKpis("ALL");
+  renderAlerts("ALL");
+  renderRooms("ALL");
   renderRankings("guild");
 
   const drawer=document.getElementById("roomDrawer");
@@ -1664,7 +1786,6 @@
 
   if(typeof echarts==="undefined"){setStatus("图表资源加载中…");return setTimeout(boot,180);}
   const axis="#777780",grid="rgba(255,255,255,.075)",tip="rgba(20,20,24,.96)";
-  let trend,rank,distribution;
   try{
     trend=echarts.init(document.getElementById("trend"));
     trend.setOption({
